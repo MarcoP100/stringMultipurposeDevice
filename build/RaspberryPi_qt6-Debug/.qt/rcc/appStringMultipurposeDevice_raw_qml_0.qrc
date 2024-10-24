@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="/StringMultipurposeDevice/">
+    <file alias="main.qml">/home/marco/progettiQt/StringMultipurposeDevice/main.qml</file>
+    <file alias="CanLoggerPage.qml">/home/marco/progettiQt/StringMultipurposeDevice/CanLoggerPage.qml</file>
+    <file alias="MainPage.qml">/home/marco/progettiQt/StringMultipurposeDevice/MainPage.qml</file>
+    <file alias="SwipeButtonArea.qml">/home/marco/progettiQt/StringMultipurposeDevice/SwipeButtonArea.qml</file>
+  </qresource>
+</RCC>
+

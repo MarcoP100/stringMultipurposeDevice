@@ -1,0 +1,14 @@
+-rootPath
+/home/marco/progettiQt/StringMultipurposeDevice
+-cmake-output
+-output-file
+/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.qt/qml_imports/appStringMultipurposeDevice_build.cmake
+-importPath
+/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/StringMultipurposeDevice
+-importPath
+/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug
+-importPath
+/home/marco/Qt/6.7.3/gcc_arm64/qml
+-qrcFiles
+/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.qt/rcc/qmake_StringMultipurposeDevice.qrc
+/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.qt/rcc/appStringMultipurposeDevice_raw_qml_0.qrc

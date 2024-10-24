@@ -1,0 +1,15 @@
+--bare
+-I
+/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug
+-I
+/home/marco/Qt/6.7.3/gcc_arm64/qml
+--resource
+/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.qt/rcc/qmake_StringMultipurposeDevice.qrc
+--resource
+/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.qt/rcc/appStringMultipurposeDevice_raw_qml_0.qrc
+/home/marco/progettiQt/StringMultipurposeDevice/main.qml
+/home/marco/progettiQt/StringMultipurposeDevice/CanLoggerPage.qml
+/home/marco/progettiQt/StringMultipurposeDevice/MainPage.qml
+/home/marco/progettiQt/StringMultipurposeDevice/SwipeButtonArea.qml
+--json
+/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/appStringMultipurposeDevice_qmllint.json

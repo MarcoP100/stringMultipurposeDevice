@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/StringMultipurposeDevice">/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/StringMultipurposeDevice</file>
+
+  </qresource>
+</RCC>
