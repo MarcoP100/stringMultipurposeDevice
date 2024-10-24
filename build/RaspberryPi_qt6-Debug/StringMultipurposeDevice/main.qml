@@ -20,69 +20,51 @@ ApplicationWindow {
             angle: 180
         }
 
+        Flickable {
+            id: flickable
+            width: 800
+            height: 480
+            contentWidth: width * 2
+            contentHeight: height
+            flickableDirection: Flickable.HorizontalFlick
+            boundsBehavior: Flickable.StopAtBounds
+            interactive: true  // Disattiva il flick inizialmente
+            clip: true
 
-        // Propriet� centralizzata per gestire le posizioni delle pagine
-        QtObject {
-            id: pageManager
-            property real mainPageX: 0
-            property real canLoggerPageX: 800  // Posizione iniziale fuori schermo
-        }
-
-        Loader {
-            id: mainPageLoader
-            source: "MainPage.qml"  // Carica il file MainPage.qml
-            //anchors.fill: parent
-
-            x: pageManager.mainPageX  // Collega alla propriet� globale
-            onLoaded: {
-                mainPageLoader.item.pageManager = pageManager  // Passa il riferimento a pageManager
-                console.log("MainPage caricata - mainPageX:", pageManager.mainPageX)  // Debug
-
+            onContentXChanged: {
+                // console.log("flickable contentX changed:", contentX)
             }
-        }
 
-        /*StackView {
-            id: stackView
-            anchors.fill: parent
 
-            initialItem: Qt.createComponent("MainPage.qml").createObject(stackView, { "stackView": stackView })
-
-            Component.onCompleted: {
-                var mainPageItem = stackView.currentItem  // Riferimento a mainPage
-
-                // Carica CanLoggerPage e passa il riferimento a mainPage
-                var canLoggerComponent = Qt.createComponent("CanLoggerPage.qml");
-                var canLoggerPage = canLoggerComponent.createObject(stackView, {
-                                                                        "stackView": stackView,
-                                                                        "mainPage": mainPageItem  // Passa mainPage come previousPage
-                                                                    });
-
-                if (canLoggerPage !== null) {
-                    stackView.push(canLoggerPage);  // Aggiungi la nuova pagina allo StackView
-                } else {
-                    console.log("Errore nel caricamento di CanLoggerPage.qml");
+            Loader {
+                id: mainPageLoader
+                source: "MainPage.qml"  // Carica il file MainPage.qml
+                //anchors.fill: parent
+                width: 800
+                height: parent.height
+                x: 0
+                onLoaded: {
+                    mainPageLoader.item.flickableRef = flickable  // Passa il riferimento di flickable
+                    flickable.interactive = false  // Attiva il flick solo quando si arriva in pagina 2
                 }
-            }*/
 
+            }
 
-
-        Loader {
-            id: canLoggerPageLoader
-            source: "CanLoggerPage.qml"  // Carica il file MainPage.qml
-            //anchors.fill: parent
-
-            x: pageManager.canLoggerPageX  // Collega alla propriet� globale
-            onLoaded: {
-                canLoggerPageLoader.item.pageManager = pageManager  // Passa il riferimento a pageManager
-                console.log("CanLoggerPage caricata - canLoggerPageX:", pageManager.canLoggerPageX)  // Debug
+            Loader {
+                id: canLoggerPageLoader
+                source: "CanLoggerPage.qml"  // Carica il file MainPage.qml
+                //anchors.fill: parent
+                width: 800
+                height: parent.height
+                x: 800  // Posiziona questa pagina a destra della prima
+                onLoaded: {
+                    canLoggerPageLoader.item.flickableRef = flickable  // Passa il riferimento di flickable
+                    flickable.interactive = true  // Attiva il flick solo quando si arriva in pagina 2
+                }
 
             }
 
         }
-
-
-
 
     }
-
 }
