@@ -11,5 +11,6 @@
 /home/marco/progettiQt/StringMultipurposeDevice/CanLoggerPage.qml
 /home/marco/progettiQt/StringMultipurposeDevice/MainPage.qml
 /home/marco/progettiQt/StringMultipurposeDevice/SwipeButtonArea.qml
+/home/marco/progettiQt/StringMultipurposeDevice/DynamometerOverCan.qml
 --json
 /home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/appStringMultipurposeDevice_qmllint.json

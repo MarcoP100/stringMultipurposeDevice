@@ -33,6 +33,13 @@ namespace _0x5f_StringMultipurposeDevice_SwipeButtonArea_qml {
         reinterpret_cast<const QV4::CompiledData::Unit*>(&qmlData), &aotBuiltFunctions[0], nullptr
     };
 }
+namespace _0x5f_StringMultipurposeDevice_DynamometerOverCan_qml { 
+    extern const unsigned char qmlData[];
+    extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
+    const QQmlPrivate::CachedQmlUnit unit = {
+        reinterpret_cast<const QV4::CompiledData::Unit*>(&qmlData), &aotBuiltFunctions[0], nullptr
+    };
+}
 
 }
 namespace {
@@ -51,6 +58,7 @@ Registry::Registry() {
     resourcePathToCachedUnit.insert(QStringLiteral("/StringMultipurposeDevice/CanLoggerPage.qml"), &QmlCacheGeneratedCode::_0x5f_StringMultipurposeDevice_CanLoggerPage_qml::unit);
     resourcePathToCachedUnit.insert(QStringLiteral("/StringMultipurposeDevice/MainPage.qml"), &QmlCacheGeneratedCode::_0x5f_StringMultipurposeDevice_MainPage_qml::unit);
     resourcePathToCachedUnit.insert(QStringLiteral("/StringMultipurposeDevice/SwipeButtonArea.qml"), &QmlCacheGeneratedCode::_0x5f_StringMultipurposeDevice_SwipeButtonArea_qml::unit);
+    resourcePathToCachedUnit.insert(QStringLiteral("/StringMultipurposeDevice/DynamometerOverCan.qml"), &QmlCacheGeneratedCode::_0x5f_StringMultipurposeDevice_DynamometerOverCan_qml::unit);
     QQmlPrivate::RegisterQmlUnitCacheHook registration;
     registration.structVersion = 0;
     registration.lookupCachedQmlUnit = &lookupCachedUnit;

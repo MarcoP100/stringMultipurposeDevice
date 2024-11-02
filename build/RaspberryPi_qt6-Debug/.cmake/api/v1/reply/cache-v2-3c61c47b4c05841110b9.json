@@ -1958,6 +1958,18 @@
 			"value" : "OFF"
 		},
 		{
+			"name" : "QT_FEATURE_3rdparty_hunspell",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: 3rdparty_hunspell (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
 			"name" : "QT_FEATURE_accessibility",
 			"properties" : 
 			[
@@ -2270,6 +2282,18 @@
 			"value" : "ON"
 		},
 		{
+			"name" : "QT_FEATURE_cangjie",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: cangjie (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
 			"name" : "QT_FEATURE_cborstreamreader",
 			"properties" : 
 			[
@@ -2292,6 +2316,66 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_cerence_hwr",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: cerence_hwr (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_cerence_hwr_alphabetic",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: cerence_hwr_alphabetic (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_cerence_hwr_cjk",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: cerence_hwr_cjk (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_cerence_sdk",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: cerence_sdk (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_cerence_xt9",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: cerence_xt9 (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
 		},
 		{
 			"name" : "QT_FEATURE_clipboard",
@@ -2978,6 +3062,18 @@
 			"value" : "ON"
 		},
 		{
+			"name" : "QT_FEATURE_example_hwr",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: example_hwr (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
 			"name" : "QT_FEATURE_f16c",
 			"properties" : 
 			[
@@ -3254,6 +3350,18 @@
 			"value" : "ON"
 		},
 		{
+			"name" : "QT_FEATURE_hangul",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: hangul (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
 			"name" : "QT_FEATURE_harfbuzz",
 			"properties" : 
 			[
@@ -3300,6 +3408,18 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_hunspell",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: hunspell (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
 		},
 		{
 			"name" : "QT_FEATURE_ico",
@@ -3842,6 +3962,18 @@
 			"value" : "ON"
 		},
 		{
+			"name" : "QT_FEATURE_myscript",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: myscript (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
 			"name" : "QT_FEATURE_neon",
 			"properties" : 
 			[
@@ -4070,6 +4202,18 @@
 			"value" : "OFF"
 		},
 		{
+			"name" : "QT_FEATURE_openwnn",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: openwnn (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
 			"name" : "QT_FEATURE_pcre2",
 			"properties" : 
 			[
@@ -4112,6 +4256,18 @@
 				{
 					"name" : "HELPSTRING",
 					"value" : "Qt feature: picture (from target Qt6::Gui)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_pinyin",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: pinyin (from target Qt6::VirtualKeyboard)"
 				}
 			],
 			"type" : "INTERNAL",
@@ -5342,6 +5498,18 @@
 			"value" : "OFF"
 		},
 		{
+			"name" : "QT_FEATURE_system_hunspell",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: system_hunspell (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
 			"name" : "QT_FEATURE_system_jpeg",
 			"properties" : 
 			[
@@ -5498,6 +5666,18 @@
 			"value" : "ON"
 		},
 		{
+			"name" : "QT_FEATURE_tcime",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: tcime (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
 			"name" : "QT_FEATURE_temporaryfile",
 			"properties" : 
 			[
@@ -5576,6 +5756,18 @@
 				{
 					"name" : "HELPSTRING",
 					"value" : "Qt feature: textodfwriter (from target Qt6::Gui)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_thai",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: thai (from target Qt6::VirtualKeyboard)"
 				}
 			],
 			"type" : "INTERNAL",
@@ -5796,6 +5988,714 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_arrow_keynavigation",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_arrow_keynavigation (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_bundle_cerence",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_bundle_cerence (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_bundle_cerence_hwr",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_bundle_cerence_hwr (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_bundle_cerence_xt9",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_bundle_cerence_xt9 (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_cerence_static",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_cerence_static (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_cerence_xt9_9key_layouts",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_cerence_xt9_9key_layouts (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_cerence_xt9_debug",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_cerence_xt9_debug (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_default_style",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_default_style (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_desktop",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_desktop (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_ar_AR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_ar_AR (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_bg_BG",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_bg_BG (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_cs_CZ",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_cs_CZ (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_da_DK",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_da_DK (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_de_DE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_de_DE (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_el_GR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_el_GR (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_en_GB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_en_GB (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_en_US",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_en_US (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_es_ES",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_es_ES (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_es_MX",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_es_MX (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_et_EE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_et_EE (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_fa_FA",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_fa_FA (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_fi_FI",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_fi_FI (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_fr_CA",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_fr_CA (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_fr_FR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_fr_FR (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_he_IL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_he_IL (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_hi_IN",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_hi_IN (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_hr_HR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_hr_HR (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_hu_HU",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_hu_HU (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_id_ID",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_id_ID (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_it_IT",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_it_IT (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_ja_JP",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_ja_JP (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_ko_KR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_ko_KR (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_ms_MY",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_ms_MY (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_nb_NO",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_nb_NO (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_nl_NL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_nl_NL (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_pl_PL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_pl_PL (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_pt_BR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_pt_BR (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_pt_PT",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_pt_PT (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_ro_RO",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_ro_RO (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_ru_RU",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_ru_RU (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_sk_SK",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_sk_SK (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_sl_SI",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_sl_SI (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_sq_AL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_sq_AL (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_sr_SP",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_sr_SP (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_sv_SE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_sv_SE (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_th_TH",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_th_TH (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_tr_TR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_tr_TR (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_uk_UA",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_uk_UA (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_vi_VN",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_vi_VN (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_zh_CN",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_zh_CN (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_zh_HK",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_zh_HK (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_lang_zh_TW",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_lang_zh_TW (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_layouts",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_layouts (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_no_builtin_style",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_no_builtin_style (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_no_bundle_pinyin",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_no_bundle_pinyin (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_no_bundle_tcime",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_no_bundle_tcime (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_record_trace_input",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_record_trace_input (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_retro_style",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_retro_style (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "QT_FEATURE_vkb_sensitive_debug",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: vkb_sensitive_debug (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "OFF"
 		},
 		{
 			"name" : "QT_FEATURE_vkgen",
@@ -6122,6 +7022,18 @@
 			"value" : "OFF"
 		},
 		{
+			"name" : "QT_FEATURE_zhuyin",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Qt feature: zhuyin (from target Qt6::VirtualKeyboard)"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
 			"name" : "QT_FEATURE_zstd",
 			"properties" : 
 			[
@@ -6336,6 +7248,18 @@
 			],
 			"type" : "PATH",
 			"value" : "/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Quick"
+		},
+		{
+			"name" : "Qt6VirtualKeyboard_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "The directory containing a CMake configuration file for Qt6VirtualKeyboard."
+				}
+			],
+			"type" : "PATH",
+			"value" : "/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard"
 		},
 		{
 			"name" : "Qt6_DIR",

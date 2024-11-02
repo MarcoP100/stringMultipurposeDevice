@@ -1,2 +1,119 @@
 [
+    {
+        "classes": [
+            {
+                "className": "WiFiManager",
+                "methods": [
+                    {
+                        "access": "public",
+                        "name": "getAvailableNetworks",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "stopNetworkScan",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "ssid",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "password",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "connectToNetwork",
+                        "returnType": "void"
+                    }
+                ],
+                "object": true,
+                "properties": [
+                    {
+                        "constant": false,
+                        "designable": true,
+                        "final": false,
+                        "index": 0,
+                        "name": "busy",
+                        "notify": "busyChanged",
+                        "read": "isBusy",
+                        "required": false,
+                        "scriptable": true,
+                        "stored": true,
+                        "type": "bool",
+                        "user": false
+                    }
+                ],
+                "qualifiedClassName": "WiFiManager",
+                "signals": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "networks",
+                                "type": "QStringList"
+                            }
+                        ],
+                        "name": "availableNetworksChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "busy",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "busyChanged",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "status",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "connectionStatusChanged",
+                        "returnType": "void"
+                    }
+                ],
+                "slots": [
+                    {
+                        "access": "private",
+                        "arguments": [
+                            {
+                                "name": "exitCode",
+                                "type": "int"
+                            },
+                            {
+                                "name": "exitStatus",
+                                "type": "QProcess::ExitStatus"
+                            }
+                        ],
+                        "name": "handleProcessFinished",
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "private",
+                        "name": "handleReadyRead",
+                        "returnType": "void"
+                    }
+                ],
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "wifimanager.h",
+        "outputRevision": 68
+    }
 ]

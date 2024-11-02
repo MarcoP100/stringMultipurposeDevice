@@ -1114,6 +1114,15 @@
 		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Quick/Qt6QuickAdditionalTargetInfo.cmake",
 		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Quick/Qt6QuickVersionlessTargets.cmake",
 		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Quick/Qt6QuickPlugins.cmake",
+		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardConfigVersion.cmake",
+		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardConfigVersionImpl.cmake",
+		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardConfig.cmake",
+		"/usr/share/cmake-3.25/Modules/CMakeFindDependencyMacro.cmake",
+		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardDependencies.cmake",
+		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardTargets.cmake",
+		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardTargets-relwithdebinfo.cmake",
+		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardAdditionalTargetInfo.cmake",
+		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardVersionlessTargets.cmake",
 		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Core/Qt6CoreConfigureFileTemplate.in",
 		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Qml/Qt6QmlModuleDirMappingTemplate.qrc.in",
 		"/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Core/Qt6CoreConfigureFileTemplate.in",
@@ -1124,7 +1133,15 @@
 	"CMAKE_SOURCE_DIR" : "/home/marco/progettiQt/StringMultipurposeDevice",
 	"DEP_FILE" : "/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/appStringMultipurposeDevice_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "appStringMultipurposeDevice_autogen/timestamp",
-	"HEADERS" : [],
+	"HEADERS" : 
+	[
+		[
+			"/home/marco/progettiQt/StringMultipurposeDevice/wifimanager.h",
+			"Mu",
+			"EWIEGA46WW/moc_wifimanager.cpp",
+			null
+		]
+	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
 	"INCLUDE_DIR" : "/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/appStringMultipurposeDevice_autogen/include",
 	"MOC_COMPILATION_FILE" : "/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/appStringMultipurposeDevice_autogen/mocs_compilation.cpp",
@@ -1138,7 +1155,8 @@
 		"QT_QMLINTEGRATION_LIB",
 		"QT_QMLMODELS_LIB",
 		"QT_QML_LIB",
-		"QT_QUICK_LIB"
+		"QT_QUICK_LIB",
+		"QT_VIRTUALKEYBOARD_LIB"
 	],
 	"MOC_DEPEND_FILTERS" : 
 	[
@@ -1167,6 +1185,7 @@
 		"/home/marco/Qt/6.7.3/gcc_arm64/include/QtGui",
 		"/home/marco/Qt/6.7.3/gcc_arm64/include/QtQmlModels",
 		"/home/marco/Qt/6.7.3/gcc_arm64/include/QtOpenGL",
+		"/home/marco/Qt/6.7.3/gcc_arm64/include/QtVirtualKeyboard",
 		"/usr/include",
 		"/usr/include/c++/12",
 		"/usr/include/aarch64-linux-gnu/c++/12",
@@ -1201,6 +1220,7 @@
 		"/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.qt/rcc/qrc_appStringMultipurposeDevice_raw_qml_0.cpp",
 		"/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.qt/rcc/qrc_qmake_StringMultipurposeDevice.cpp",
 		"/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.rcc/qmlcache/appStringMultipurposeDevice_CanLoggerPage_qml.cpp",
+		"/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.rcc/qmlcache/appStringMultipurposeDevice_DynamometerOverCan_qml.cpp",
 		"/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.rcc/qmlcache/appStringMultipurposeDevice_MainPage_qml.cpp",
 		"/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.rcc/qmlcache/appStringMultipurposeDevice_SwipeButtonArea_qml.cpp",
 		"/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/.rcc/qmlcache/appStringMultipurposeDevice_main_qml.cpp",
@@ -1219,6 +1239,11 @@
 	[
 		[
 			"/home/marco/progettiQt/StringMultipurposeDevice/main.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/marco/progettiQt/StringMultipurposeDevice/wifimanager.cpp",
 			"Mu",
 			null
 		]

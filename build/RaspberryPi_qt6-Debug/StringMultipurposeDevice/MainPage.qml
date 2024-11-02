@@ -8,6 +8,7 @@ Item {
     height: 480
 
     property Flickable flickableRef
+    property var pageManager
 
     GridLayout {
         columns: 2
@@ -25,6 +26,10 @@ Item {
                 // Naviga a Pagina 1
                 console.log("Vai a Pagina 1")
                 // Sposta il Flickable alla pagina 2
+                if (pageManager){
+                    pageManager.canLoggerPageX = 800
+                    pageManager.dynaOnCanPageX = 1600
+                }
                 if (flickableRef) {
                     flickableRef.contentX = 800
                 }
@@ -39,7 +44,13 @@ Item {
             onClicked: {
                 // Naviga a Pagina 2
                 console.log("Vai a Pagina 2")
-                //stackView.push("CanDynamometerPage.qml")  // Naviga alla sottopagina
+                if (pageManager){
+                    pageManager.canLoggerPageX = 1600
+                    pageManager.dynaOnCanPageX = 800
+                }
+                if (flickableRef) {
+                    flickableRef.contentX = 800
+                }
             }
         }
 

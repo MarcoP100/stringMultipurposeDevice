@@ -4655,6 +4655,43 @@
 		},
 		{
 			"isExternal" : true,
+			"path" : "/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardConfigVersion.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardConfigVersionImpl.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardConfig.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake-3.25/Modules/CMakeFindDependencyMacro.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardDependencies.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardTargets-relwithdebinfo.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardAdditionalTargetInfo.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardVersionlessTargets.cmake"
+		},
+		{
+			"isExternal" : true,
 			"path" : "/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Core/Qt6CoreConfigureFileTemplate.in"
 		},
 		{

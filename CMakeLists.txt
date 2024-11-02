@@ -5,7 +5,7 @@ project(StringMultipurposeDevice VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.2 COMPONENTS Quick REQUIRED)
+find_package(Qt6 6.2 COMPONENTS Quick VirtualKeyboard REQUIRED)
 
 qt_add_executable(appStringMultipurposeDevice
     main.cpp
@@ -18,6 +18,8 @@ qt_add_qml_module(appStringMultipurposeDevice
     QML_FILES CanLoggerPage.qml
     QML_FILES MainPage.qml
     QML_FILES SwipeButtonArea.qml
+    QML_FILES DynamometerOverCan.qml
+    SOURCES wifimanager.h wifimanager.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -32,9 +34,15 @@ set_target_properties(appStringMultipurposeDevice PROPERTIES
 )
 
 target_link_libraries(appStringMultipurposeDevice
-    PRIVATE Qt6::Quick)
+    PRIVATE Qt6::Quick Qt6::VirtualKeyboard)
+
+#qt_import_plugins(appStringMultipurposeDevice
+#    INCLUDE Qt::QVirtualKeyboardPlugin
+#)
 
 include(GNUInstallDirs)
 install(TARGETS appStringMultipurposeDevice
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+

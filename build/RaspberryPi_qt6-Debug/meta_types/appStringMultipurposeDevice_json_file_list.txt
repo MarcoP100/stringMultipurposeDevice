@@ -1,0 +1,1 @@
+/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/appStringMultipurposeDevice_autogen/include/../EWIEGA46WW/moc_wifimanager.cpp.json

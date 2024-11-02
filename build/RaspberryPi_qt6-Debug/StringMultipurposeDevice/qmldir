@@ -4,4 +4,5 @@ prefer :/StringMultipurposeDevice/
 CanLoggerPage 1.0 CanLoggerPage.qml
 MainPage 1.0 MainPage.qml
 SwipeButtonArea 1.0 SwipeButtonArea.qml
+DynamometerOverCan 1.0 DynamometerOverCan.qml
 

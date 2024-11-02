@@ -20,11 +20,17 @@ ApplicationWindow {
             angle: 180
         }
 
+        QtObject {
+            id: pageManager
+            property real canLoggerPageX: 1600
+            property real dynaOnCanPageX: 800
+        }
+
         Flickable {
             id: flickable
             width: 800
             height: 480
-            contentWidth: width * 2
+            contentWidth: width * 3
             contentHeight: height
             flickableDirection: Flickable.HorizontalFlick
             boundsBehavior: Flickable.StopAtBounds
@@ -36,6 +42,7 @@ ApplicationWindow {
             }
 
 
+
             Loader {
                 id: mainPageLoader
                 source: "MainPage.qml"  // Carica il file MainPage.qml
@@ -45,6 +52,7 @@ ApplicationWindow {
                 x: 0
                 onLoaded: {
                     mainPageLoader.item.flickableRef = flickable  // Passa il riferimento di flickable
+                    mainPageLoader.item.pageManager = pageManager
                     flickable.interactive = false  // Attiva il flick solo quando si arriva in pagina 2
                 }
 
@@ -56,9 +64,24 @@ ApplicationWindow {
                 //anchors.fill: parent
                 width: 800
                 height: parent.height
-                x: 800  // Posiziona questa pagina a destra della prima
+                x: pageManager.canLoggerPageX  // Posiziona questa pagina a destra della prima
                 onLoaded: {
                     canLoggerPageLoader.item.flickableRef = flickable  // Passa il riferimento di flickable
+                    flickable.interactive = true  // Attiva il flick solo quando si arriva in pagina 2
+                }
+
+            }
+
+
+            Loader {
+                id: dynaOnCanPageLoader
+                source: "DynamometerOverCan.qml"  // Carica il file MainPage.qml
+                //anchors.fill: parent
+                width: 800
+                height: parent.height
+                x: pageManager.dynaOnCanPageX  // Posiziona questa pagina a destra della prima
+                onLoaded: {
+                    dynaOnCanPageLoader.item.flickableRef = flickable  // Passa il riferimento di flickable
                     flickable.interactive = true  // Attiva il flick solo quando si arriva in pagina 2
                 }
 
