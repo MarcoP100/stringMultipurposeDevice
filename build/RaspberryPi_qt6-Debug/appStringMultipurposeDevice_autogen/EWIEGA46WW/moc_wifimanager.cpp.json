@@ -2,10 +2,26 @@
     "classes": [
         {
             "className": "WiFiManager",
+            "enums": [
+                {
+                    "isClass": false,
+                    "isFlag": false,
+                    "name": "ConnectionStatus",
+                    "values": [
+                        "ErrorProcessStart",
+                        "Timeout",
+                        "Connecting",
+                        "Connected",
+                        "WrongPassword",
+                        "ConnectionFailed",
+                        "SsidEmpty"
+                    ]
+                }
+            ],
             "methods": [
                 {
                     "access": "public",
-                    "name": "getAvailableNetworks",
+                    "name": "scanNetworks",
                     "returnType": "void"
                 },
                 {
@@ -27,6 +43,11 @@
                     ],
                     "name": "connectToNetwork",
                     "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "name": "isBusy",
+                    "returnType": "bool"
                 }
             ],
             "object": true,
@@ -53,7 +74,7 @@
                     "arguments": [
                         {
                             "name": "networks",
-                            "type": "QStringList"
+                            "type": "QVariantList"
                         }
                     ],
                     "name": "availableNetworksChanged",
@@ -75,10 +96,21 @@
                     "arguments": [
                         {
                             "name": "status",
-                            "type": "QString"
+                            "type": "WiFiManager::ConnectionStatus"
                         }
                     ],
                     "name": "connectionStatusChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "status",
+                            "type": "QString"
+                        }
+                    ],
+                    "name": "savedNetworksChanged",
                     "returnType": "void"
                 }
             ],
@@ -100,7 +132,47 @@
                 },
                 {
                     "access": "private",
+                    "arguments": [
+                        {
+                            "name": "exitCode",
+                            "type": "int"
+                        },
+                        {
+                            "name": "exitStatus",
+                            "type": "QProcess::ExitStatus"
+                        }
+                    ],
+                    "name": "handleConnectionFinished",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "arguments": [
+                        {
+                            "name": "exitCode",
+                            "type": "int"
+                        },
+                        {
+                            "name": "exitStatus",
+                            "type": "QProcess::ExitStatus"
+                        }
+                    ],
+                    "name": "handleSavedNetworksFinished",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
                     "name": "handleReadyRead",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "handleConnectionTimeout",
+                    "returnType": "void"
+                },
+                {
+                    "access": "private",
+                    "name": "handleSavedNetworksTimeout",
                     "returnType": "void"
                 }
             ],

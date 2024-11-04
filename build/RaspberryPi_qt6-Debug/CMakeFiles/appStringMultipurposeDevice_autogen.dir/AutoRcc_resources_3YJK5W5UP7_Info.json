@@ -1,0 +1,28 @@
+{
+	"BUILD_DIR" : "/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/appStringMultipurposeDevice_autogen",
+	"CMAKE_BINARY_DIR" : "/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/marco/progettiQt/StringMultipurposeDevice",
+	"CMAKE_SOURCE_DIR" : "/home/marco/progettiQt/StringMultipurposeDevice",
+	"INCLUDE_DIR" : "/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/appStringMultipurposeDevice_autogen/include",
+	"INPUTS" : 
+	[
+		"/home/marco/progettiQt/StringMultipurposeDevice/resources/wifiLock.svg",
+		"/home/marco/progettiQt/StringMultipurposeDevice/resources/wifi_search.svg",
+		"/home/marco/progettiQt/StringMultipurposeDevice/resources/wifiUnLock.svg",
+		"/home/marco/progettiQt/StringMultipurposeDevice/resources/key_on.svg",
+		"/home/marco/progettiQt/StringMultipurposeDevice/resources/wifi_off.svg",
+		"/home/marco/progettiQt/StringMultipurposeDevice/resources/key_no.svg",
+		"/home/marco/progettiQt/StringMultipurposeDevice/resources/wifi_on.svg"
+	],
+	"LOCK_FILE" : "/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/CMakeFiles/appStringMultipurposeDevice_autogen.dir/AutoRcc_resources_3YJK5W5UP7_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "resources" ],
+	"OUTPUT_CHECKSUM" : "3YJK5W5UP7",
+	"OUTPUT_NAME" : "qrc_resources.cpp",
+	"RCC_EXECUTABLE" : "/home/marco/Qt/6.7.3/gcc_arm64/libexec/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/CMakeFiles/appStringMultipurposeDevice_autogen.dir/AutoRcc_resources_3YJK5W5UP7_Used.txt",
+	"SOURCE" : "/home/marco/progettiQt/StringMultipurposeDevice/resources/resources.qrc",
+	"VERBOSITY" : 0
+}

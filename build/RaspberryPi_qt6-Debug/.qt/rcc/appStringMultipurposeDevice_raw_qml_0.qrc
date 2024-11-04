@@ -5,6 +5,7 @@
     <file alias="MainPage.qml">/home/marco/progettiQt/StringMultipurposeDevice/MainPage.qml</file>
     <file alias="SwipeButtonArea.qml">/home/marco/progettiQt/StringMultipurposeDevice/SwipeButtonArea.qml</file>
     <file alias="DynamometerOverCan.qml">/home/marco/progettiQt/StringMultipurposeDevice/DynamometerOverCan.qml</file>
+    <file alias="resources/resources.qrc">/home/marco/progettiQt/StringMultipurposeDevice/resources/resources.qrc</file>
   </qresource>
 </RCC>
 

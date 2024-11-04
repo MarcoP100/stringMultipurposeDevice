@@ -42,17 +42,32 @@ constexpr auto qt_meta_stringdata_CLASSWiFiManagerENDCLASS = QtMocHelpers::strin
     "busyChanged",
     "busy",
     "connectionStatusChanged",
+    "WiFiManager::ConnectionStatus",
     "status",
+    "savedNetworksChanged",
     "handleProcessFinished",
     "exitCode",
     "QProcess::ExitStatus",
     "exitStatus",
+    "handleConnectionFinished",
+    "handleSavedNetworksFinished",
     "handleReadyRead",
-    "getAvailableNetworks",
+    "handleConnectionTimeout",
+    "handleSavedNetworksTimeout",
+    "scanNetworks",
     "stopNetworkScan",
     "connectToNetwork",
     "ssid",
-    "password"
+    "password",
+    "isBusy",
+    "ConnectionStatus",
+    "ErrorProcessStart",
+    "Timeout",
+    "Connecting",
+    "Connected",
+    "WrongPassword",
+    "ConnectionFailed",
+    "SsidEmpty"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -65,43 +80,67 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSWiFiManagerENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
-       1,   84, // properties
-       0,    0, // enums/sets
+      14,   14, // methods
+       1,  136, // properties
+       1,  141, // enums/sets
        0,    0, // constructors
        0,       // flags
-       3,       // signalCount
+       4,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   62,    2, 0x06,    2 /* Public */,
-       4,    1,   65,    2, 0x06,    4 /* Public */,
-       6,    1,   68,    2, 0x06,    6 /* Public */,
+       1,    1,   98,    2, 0x06,    3 /* Public */,
+       4,    1,  101,    2, 0x06,    5 /* Public */,
+       6,    1,  104,    2, 0x06,    7 /* Public */,
+       9,    1,  107,    2, 0x06,    9 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       8,    2,   71,    2, 0x08,    8 /* Private */,
-      12,    0,   76,    2, 0x08,   11 /* Private */,
+      10,    2,  110,    2, 0x08,   11 /* Private */,
+      14,    2,  115,    2, 0x08,   14 /* Private */,
+      15,    2,  120,    2, 0x08,   17 /* Private */,
+      16,    0,  125,    2, 0x08,   20 /* Private */,
+      17,    0,  126,    2, 0x08,   21 /* Private */,
+      18,    0,  127,    2, 0x08,   22 /* Private */,
 
  // methods: name, argc, parameters, tag, flags, initial metatype offsets
-      13,    0,   77,    2, 0x02,   12 /* Public */,
-      14,    0,   78,    2, 0x02,   13 /* Public */,
-      15,    2,   79,    2, 0x02,   14 /* Public */,
+      19,    0,  128,    2, 0x02,   23 /* Public */,
+      20,    0,  129,    2, 0x02,   24 /* Public */,
+      21,    2,  130,    2, 0x02,   25 /* Public */,
+      24,    0,  135,    2, 0x102,   28 /* Public | MethodIsConst  */,
 
  // signals: parameters
-    QMetaType::Void, QMetaType::QStringList,    3,
+    QMetaType::Void, QMetaType::QVariantList,    3,
     QMetaType::Void, QMetaType::Bool,    5,
-    QMetaType::Void, QMetaType::QString,    7,
+    QMetaType::Void, 0x80000000 | 7,    8,
+    QMetaType::Void, QMetaType::QString,    8,
 
  // slots: parameters
-    QMetaType::Void, QMetaType::Int, 0x80000000 | 10,    9,   11,
+    QMetaType::Void, QMetaType::Int, 0x80000000 | 12,   11,   13,
+    QMetaType::Void, QMetaType::Int, 0x80000000 | 12,   11,   13,
+    QMetaType::Void, QMetaType::Int, 0x80000000 | 12,   11,   13,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
 
  // methods: parameters
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString, QMetaType::QString,   16,   17,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString,   22,   23,
+    QMetaType::Bool,
 
  // properties: name, type, flags
        5, QMetaType::Bool, 0x00015001, uint(1), 0,
+
+ // enums: name, alias, flags, count, data
+      25,   25, 0x0,    7,  146,
+
+ // enum data: key, value
+      26, uint(WiFiManager::ErrorProcessStart),
+      27, uint(WiFiManager::Timeout),
+      28, uint(WiFiManager::Connecting),
+      29, uint(WiFiManager::Connected),
+      30, uint(WiFiManager::WrongPassword),
+      31, uint(WiFiManager::ConnectionFailed),
+      32, uint(WiFiManager::SsidEmpty),
 
        0        // eod
 };
@@ -115,31 +154,50 @@ Q_CONSTINIT const QMetaObject WiFiManager::staticMetaObject = { {
     qt_incomplete_metaTypeArray<qt_meta_stringdata_CLASSWiFiManagerENDCLASS_t,
         // property 'busy'
         QtPrivate::TypeAndForceComplete<bool, std::true_type>,
+        // enum 'ConnectionStatus'
+        QtPrivate::TypeAndForceComplete<WiFiManager::ConnectionStatus, std::true_type>,
         // Q_OBJECT / Q_GADGET
         QtPrivate::TypeAndForceComplete<WiFiManager, std::true_type>,
         // method 'availableNetworksChanged'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QStringList, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QVariantList &, std::false_type>,
         // method 'busyChanged'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         // method 'connectionStatusChanged'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        QtPrivate::TypeAndForceComplete<WiFiManager::ConnectionStatus, std::false_type>,
+        // method 'savedNetworksChanged'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
         // method 'handleProcessFinished'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<int, std::false_type>,
+        QtPrivate::TypeAndForceComplete<QProcess::ExitStatus, std::false_type>,
+        // method 'handleConnectionFinished'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<int, std::false_type>,
+        QtPrivate::TypeAndForceComplete<QProcess::ExitStatus, std::false_type>,
+        // method 'handleSavedNetworksFinished'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
         QtPrivate::TypeAndForceComplete<QProcess::ExitStatus, std::false_type>,
         // method 'handleReadyRead'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'getAvailableNetworks'
+        // method 'handleConnectionTimeout'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'handleSavedNetworksTimeout'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'scanNetworks'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'stopNetworkScan'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'connectToNetwork'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>
+        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
+        // method 'isBusy'
+        QtPrivate::TypeAndForceComplete<bool, std::false_type>
     >,
     nullptr
 } };
@@ -150,20 +208,27 @@ void WiFiManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         auto *_t = static_cast<WiFiManager *>(_o);
         (void)_t;
         switch (_id) {
-        case 0: _t->availableNetworksChanged((*reinterpret_cast< std::add_pointer_t<QStringList>>(_a[1]))); break;
+        case 0: _t->availableNetworksChanged((*reinterpret_cast< std::add_pointer_t<QVariantList>>(_a[1]))); break;
         case 1: _t->busyChanged((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
-        case 2: _t->connectionStatusChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
-        case 3: _t->handleProcessFinished((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QProcess::ExitStatus>>(_a[2]))); break;
-        case 4: _t->handleReadyRead(); break;
-        case 5: _t->getAvailableNetworks(); break;
-        case 6: _t->stopNetworkScan(); break;
-        case 7: _t->connectToNetwork((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
+        case 2: _t->connectionStatusChanged((*reinterpret_cast< std::add_pointer_t<WiFiManager::ConnectionStatus>>(_a[1]))); break;
+        case 3: _t->savedNetworksChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 4: _t->handleProcessFinished((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QProcess::ExitStatus>>(_a[2]))); break;
+        case 5: _t->handleConnectionFinished((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QProcess::ExitStatus>>(_a[2]))); break;
+        case 6: _t->handleSavedNetworksFinished((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QProcess::ExitStatus>>(_a[2]))); break;
+        case 7: _t->handleReadyRead(); break;
+        case 8: _t->handleConnectionTimeout(); break;
+        case 9: _t->handleSavedNetworksTimeout(); break;
+        case 10: _t->scanNetworks(); break;
+        case 11: _t->stopNetworkScan(); break;
+        case 12: _t->connectToNetwork((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
+        case 13: { bool _r = _t->isBusy();
+            if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (WiFiManager::*)(QStringList );
+            using _t = void (WiFiManager::*)(const QVariantList & );
             if (_t _q_method = &WiFiManager::availableNetworksChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
                 *result = 0;
                 return;
@@ -177,9 +242,16 @@ void WiFiManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
             }
         }
         {
-            using _t = void (WiFiManager::*)(QString );
+            using _t = void (WiFiManager::*)(WiFiManager::ConnectionStatus );
             if (_t _q_method = &WiFiManager::connectionStatusChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
                 *result = 2;
+                return;
+            }
+        }
+        {
+            using _t = void (WiFiManager::*)(const QString & );
+            if (_t _q_method = &WiFiManager::savedNetworksChanged; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 3;
                 return;
             }
         }
@@ -216,13 +288,13 @@ int WiFiManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 14)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 14;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 8)
+        if (_id < 14)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 8;
+        _id -= 14;
     }else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::BindableProperty
             || _c == QMetaObject::RegisterPropertyMetaType) {
@@ -233,7 +305,7 @@ int WiFiManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void WiFiManager::availableNetworksChanged(QStringList _t1)
+void WiFiManager::availableNetworksChanged(const QVariantList & _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
@@ -247,9 +319,16 @@ void WiFiManager::busyChanged(bool _t1)
 }
 
 // SIGNAL 2
-void WiFiManager::connectionStatusChanged(QString _t1)
+void WiFiManager::connectionStatusChanged(WiFiManager::ConnectionStatus _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
+}
+
+// SIGNAL 3
+void WiFiManager::savedNetworksChanged(const QString & _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 QT_WARNING_POP

@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.VirtualKeyboard
 import QtQuick.VirtualKeyboard.Settings
-//import CustomComponents 1.0
+import com.wifiManager 1.0
 
 Item {
     id: dynaOnCanPage
@@ -17,8 +17,8 @@ Item {
     property bool isPasswordVisible: false
 
     // Dizionario per memorizzare le password delle reti Wi-Fi in base al SSID
-    property var passwordDictionary: ({})
-    property string selectedNetwork: "" // Rete selezionata
+    //property var passwordDictionary: ({})
+    property var selectedNetwork: { "ssid": "", "lock": false, "isSaved": false }
 
 
     SwipeButtonArea {
@@ -31,14 +31,50 @@ Item {
         target: wifiManager
         function onAvailableNetworksChanged(networks) {
 
-            console.log("Reti WiFi trovate:", networks);
+            for (var i = 0; i < networks.length; i++) {
+                console.log("SSID:", networks[i].ssid, "Richiede password:", networks[i].requiresPassword, "Salvata:", networks[i].networkKnown);
+            }
             updateNetworkList(networks);
 
 
         }
+
+        function onConnectionStatusChanged(status) {
+            console.log("Status:", status)
+            switch (status) {
+            case WiFiManager.ErrorProcessStart:
+                console.log("Errore nell'avvio del processo.");
+                wifiStatusIcon.source = "qrc:/wifi_off.svg"
+                break;
+            case WiFiManager.Timeout:
+                console.log("La connessione ha superato il timeout.");
+                wifiStatusIcon.source = "qrc:/wifi_off.svg"
+                break;
+            case WiFiManager.Connecting:
+                console.log("Connessione in corso...");
+                wifiStatusIcon.source = "qrc:/wifi_search.svg"
+                break;
+            case WiFiManager.Connected:
+                console.log("Connessione avvenuta con successo.");
+                wifiStatusIcon.source = "qrc:/wifi_on.svg"
+                break;
+            case WiFiManager.WrongPassword:
+                console.log("Password errata. Riprovare.");
+                wifiStatusIcon.source = "qrc:/wifi_off.svg"
+                passwordDialog.visible = true;
+                break;
+            case WiFiManager.ConnectionFailed:
+                console.log("Connessione fallita.");
+                wifiStatusIcon.source = "qrc:/wifi_off.svg"
+                break;
+            default:
+                console.log("Stato della connessione sconosciuto.");
+                wifiStatusIcon.source = "qrc:/wifi_off.svg"
+            }
+        }
     }
     ListModel {
-        id: listModel
+        id: wifiListModel
     }
 
     /*WiFiManager {
@@ -57,38 +93,49 @@ Item {
 
     // Funzione per avviare la scansione delle reti e mostrare l'indicatore di caricamento
     function startNetworkScan() {
-        listModel.clear();
+        wifiListModel.clear();
         //busyIndicator.running = true;  // Avvia l'indicatore di caricamento
-        wifiManager.getAvailableNetworks();  // Avvia la ricerca delle reti
+        wifiManager.scanNetworks();  // Avvia la ricerca delle reti
         //busyIndicator.running = false;
 
     }
 
     /*Component.onCompleted: {
             // Esegui una ricerca delle reti all'apertura della pagina
-            wifiManager.getAvailableNetworks();
+            wifiManager.getSavedNetworks();
         }*/
 
     function updateNetworkList(networks) {
-        //console.log("Reti trovate in QML:", networks);
         // Mappa per evitare duplicati e per mantenere traccia degli elementi attuali
 
         var existingNetworks = {};
-        for (var j = 0; j < listModel.count; j++) {
-            existingNetworks[listModel.get(j).text] = true;
+        for (var j = 0; j < wifiListModel.count; j++) {
+            existingNetworks[wifiListModel.get(j).ssid] = true;
         }
 
         // Aggiungi solo le reti che non sono gi� presenti nel modello
         for (var i = 0; i < networks.length; i++) {
-            if (!existingNetworks[networks[i]]) {
-                listModel.append({"text": networks[i]});
+            if (!existingNetworks[networks[i].ssid]) {
+                wifiListModel.append({
+                                         ssid: networks[i].ssid,
+                                         requiresPassword: networks[i].requiresPassword,
+                                         networkKnown: networks[i].networkKnown
+                                     });
             }
         }
 
         // Rimuovi le reti che non sono pi� presenti
-        for (var k = listModel.count - 1; k >= 0; k--) {
-            if (networks.indexOf(listModel.get(k).text) === -1) {
-                listModel.remove(k);
+        for (var k = wifiListModel.count - 1; k >= 0; k--) {
+            var ssid = wifiListModel.get(k).ssid;
+            var found = false;
+            for (var m = 0; m < networks.length; m++) {
+                if (networks[m].ssid === ssid) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                wifiListModel.remove(k);
             }
         }
     }
@@ -106,45 +153,48 @@ Item {
         }
     }
 
-    // Placeholder per determinare se una rete ha bisogno di una password
-    function needsPassword(ssid) {
-        // Logica per determinare se la rete richiede una password (es. reti salvate)
-        return true;  // Supponiamo per ora che ogni rete ne abbia bisogno
-    }
+
 
     function isNetworkSelected() {
-        if (selectedNetwork == "")
+        if (selectedNetwork.ssid === "")
             return false;  // Supponiamo per ora che ogni rete ne abbia bisogno
         else
             return true;
     }
 
-    function addNetworkPassword(ssid) {
+    /* function addNetworkPassword(ssid) {
         // Se il dizionario non contiene la rete, aggiungila
         if (!(ssid in passwordDictionary)) {
             passwordDictionary[ssid] = "";
         }
     }
 
-    /*// Funzione di connessione alla rete WiFi
-        function connectToNetwork(ssid) {
-            if (ssid in passwordDictionary && passwordDictionary[ssid] !== "") {
-                console.log("Password trovata per:", ssid);
-                // Tenta di connetterti con la password associata
-                wifiManager.connectToNetwork(ssid, passwordDictionary[ssid]);
-            } else {
-                console.log("Password necessaria per:", ssid);
-                passwordDialog.visible = true;
-            }
-        }*/
 
     // Salva una nuova password quando viene confermata
     function savePassword(ssid, password) {
         passwordDictionary[ssid] = password;
         console.log("Password salvata per:", ssid);
+    }*/
+
+    function needsPassword(){
+        // Controllo se la rete richiede la password
+        if (selectedNetwork.lock) {
+            if (selectedNetwork.isSaved) {
+                console.log("Password conosciuta")
+                // Tenta di connettersi utilizzando la password inserita
+                wifiManager.connectToNetwork(selectedNetwork.ssid, "");
+            } else {
+                // Se non c'� password, mostra il popup per richiederla
+                console.log("Password necessaria")
+                passwordDialog.visible = true;
+            }
+
+        } else {
+            // Chiamata diretta a C++ per connettersi senza password
+            wifiManager.connectToNetwork(selectedNetwork.ssid, "")
+            updateStatus("connecting");
+        }
     }
-
-
 
     // Dialogo manuale creato all'interno del contenitore principale
     Rectangle {
@@ -204,39 +254,74 @@ Item {
                     id: listView
                     width: parent.width
                     height: contentHeight  // Altezza dinamica per mostrare tutto il contenuto
-                    model: listModel
+                    model: wifiListModel
                     focus: true  // Assicurati che la ListView mantenga il focus
                     interactive: true  // Mantieni la ListView interattiva
                     visible: !wifiManager.busy
+
                     delegate: ItemDelegate {
                         width: listView.width
                         height: 40  // Altezza di ogni elemento per calcolare la dimensione complessiva
 
-                        text: model.text
-                        onClicked: {
-                            networkButton.text = model.text;  // Aggiorna il pulsante con la rete selezionata
-                            selectedNetwork = model.text;
-                            addNetworkPassword(selectedNetwork);
-                            networkDialog.visible = false;  // Chiudi il dialogo dopo la selezione
+                        Rectangle {
+                            width: parent.width
+                            height: 40
+                            color: wifiSelectedArea.pressed ? "#d0d0d0" : "#f0f0f0"
+                            border.color: "#cccccc"
+                            border.width: 1
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: parent.left
+                                anchors.leftMargin: 10
+                                text:  model.ssid
+
+                            }
+
+
+
+                            Image {
+                                id: netLock
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.right: parent.right
+                                anchors.rightMargin: 10
+                                source: requiresPassword ? "qrc:/wifiLock.svg" : "qrc:/wifiUnLock.svg"
+                                visible: true // Mostra l'icona del lucchetto se � richiesta una password
+
+                            }
+
+                            Image {
+                                id: netKnown
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.right: netLock.left
+                                anchors.rightMargin: 10
+                                source: networkKnown ? "qrc:/key_on.svg" : "qrc:/key_no.svg"
+                                visible: requiresPassword // Mostra l'icona del lucchetto se � richiesta una password
+
+                            }
+
+                            MouseArea {
+                                id: wifiSelectedArea
+                                anchors.fill: parent
+                                onClicked: {
+                                    console.log("Rete selezionata:", ssid);
+                                    // Gestione della selezione della rete
+                                    selectedNetwork = {
+                                        "ssid": model.ssid,
+                                        "lock": model.requiresPassword,
+                                        "isSaved": model.networkKnown
+                                    };
+                                    networkButton.text = selectedNetwork.ssid;
+                                    //addNetworkPassword(selectedNetwork.ssid);
+                                    networkDialog.visible = false;  // Chiudi il dialogo dopo la selezione
+                                }
+                            }
                         }
+
                     }
-                }
 
+                }
             }
-
-            /*// Pulsante per aggiornare la lista delle reti WiFi
-            Button {
-                id: refreshButton
-                text: "Aggiorna"
-                width: parent.width * 0.5
-                anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: {
-                    startNetworkScan();
-                }
-            }*/
-
-
-
         }
 
 
@@ -353,23 +438,7 @@ Item {
                 flickRef: flickableRef  // Passiamo il riferimento del Flickable
             }
             onClicked: {
-                // Controllo se la rete richiede la password
-                if (needsPassword(selectedNetwork)) {
-                    if (passwordDictionary[selectedNetwork] && passwordDictionary[selectedNetwork] !== "") {
-                        console.log("Password trovata")
-                        // Tenta di connettersi utilizzando la password inserita
-                        wifiManager.connectToNetwork(selectedNetwork, passwordField.text);
-                    } else {
-                        // Se non c'� password, mostra il popup per richiederla
-                        console.log("Password necessaria")
-                        passwordDialog.visible = true;
-                    }
-
-                } else {
-                    // Chiamata diretta a C++ per connettersi senza password
-                    wifiManager.connectToNetwork(selectedNetwork, "")
-                    updateStatus("connecting");
-                }
+                needsPassword();
             }
 
 
@@ -378,15 +447,25 @@ Item {
         // Indicatore di stato (LED)
         Rectangle {
             id: statusLed
-            width: 20
-            height: 20
-            radius: 10
-            color: "red"
+            //width: 20
+            //height: 20
+            //radius: 10
+            //color: "red"
             anchors.top: networkButton.bottom
             anchors.left: wifiConnection.right
             anchors.topMargin: 10
             anchors.leftMargin: 20
             //anchors.verticalCenter: wifiNetworks.verticalCenter
+
+            Image {
+                id: wifiStatusIcon
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                anchors.rightMargin: 10
+                //source: requiresPassword ? "qrc:/wifiLock.svg" : "qrc:/wifiUnLock.svg"
+                visible: true // Mostra l'icona del lucchetto se � richiesta una password
+
+            }
         }
     }
 
@@ -409,15 +488,8 @@ Item {
 
         y: keyboard.active ? (parent.height - keyboard.height - height - 10) : (parent.height - height) / 2
 
-
         anchors.horizontalCenter: parent.horizontalCenter
-        // Ancoraggio dinamico al centro, ma si sposta verso l'alto quando la tastiera � visibile
-        /*anchors {
-            verticalCenter: keyboardVisible ? undefined : parent.verticalCenter
-            bottom: keyboardVisible ? keyboard.top : undefined
-            bottomMargin: !keyboardVisible ? 10 : 0  // Margine opzionale
 
-        }*/
 
         // Aggiorna la visibilit� quando cambia lo stato della tastiera
         onKeyboardVisibleChanged: {
@@ -438,15 +510,6 @@ Item {
             }
         }
 
-        /*MouseArea {
-            id: textFieldMouseArea
-            anchors.fill: parent
-            onClicked: {
-                if (passwordField.active) {
-                    passwordField.forceActiveFocus();
-                }
-            }
-        }*/
 
         Column {
             spacing: 10
@@ -508,15 +571,17 @@ Item {
             Button {
                 text: "Conferma"
                 anchors.horizontalCenter: parent.horizontalCenter
+                property string tmpPassword: ""
                 onClicked: {
-                    savePassword(selectedNetwork, passwordField.text);
-
+                    tmpPassword = passwordField.text;
                     passwordField.focus = false;
                     passwordDialog.visible = false;
                     isPasswordVisible = false;
                     passwordField.text = "";
 
-                    console.log("Password salvata per SSID:", selectedNetwork, "Password:", passwordDictionary[selectedNetwork])
+                    console.log("Password salvata per SSID:", selectedNetwork.ssid, "Password:", tmpPassword)
+
+                    wifiManager.connectToNetwork(selectedNetwork.ssid, tmpPassword);
 
                 }
             }

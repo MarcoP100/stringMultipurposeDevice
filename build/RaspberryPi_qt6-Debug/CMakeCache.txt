@@ -358,6 +358,9 @@ Qt6QuickTools_DIR:PATH=/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6QuickTools
 //The directory containing a CMake configuration file for Qt6Quick.
 Qt6Quick_DIR:PATH=/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Quick
 
+//The directory containing a CMake configuration file for Qt6Svg.
+Qt6Svg_DIR:PATH=/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Svg
+
 //The directory containing a CMake configuration file for Qt6VirtualKeyboard.
 Qt6VirtualKeyboard_DIR:PATH=/home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard
 

@@ -1,5 +1,6 @@
 /home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/appStringMultipurposeDevice_autogen/EWIEGA46WW/moc_wifimanager.cpp: /home/marco/progettiQt/StringMultipurposeDevice/wifimanager.h \
   /home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/appStringMultipurposeDevice_autogen/moc_predefs.h \
+  /home/marco/Qt/6.7.3/gcc_arm64/include/QtCore/QList \
   /home/marco/Qt/6.7.3/gcc_arm64/include/QtCore/QObject \
   /home/marco/Qt/6.7.3/gcc_arm64/include/QtCore/QProcess \
   /home/marco/Qt/6.7.3/gcc_arm64/include/QtCore/QStringList \

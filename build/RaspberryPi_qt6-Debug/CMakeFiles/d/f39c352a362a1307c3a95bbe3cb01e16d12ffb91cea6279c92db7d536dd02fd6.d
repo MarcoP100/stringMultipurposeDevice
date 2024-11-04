@@ -1,4 +1,5 @@
 appStringMultipurposeDevice_autogen/timestamp: \
+  /home/marco/Qt/6.7.3/gcc_arm64/include/QtCore/QList \
   /home/marco/Qt/6.7.3/gcc_arm64/include/QtCore/QObject \
   /home/marco/Qt/6.7.3/gcc_arm64/include/QtCore/QProcess \
   /home/marco/Qt/6.7.3/gcc_arm64/include/QtCore/QStringList \
@@ -882,6 +883,14 @@ appStringMultipurposeDevice_autogen/timestamp: \
   /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6QuickTools/Qt6QuickToolsTargets-relwithdebinfo.cmake \
   /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6QuickTools/Qt6QuickToolsTargets.cmake \
   /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6QuickTools/Qt6QuickToolsVersionlessTargets.cmake \
+  /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Svg/Qt6SvgAdditionalTargetInfo.cmake \
+  /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Svg/Qt6SvgConfig.cmake \
+  /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Svg/Qt6SvgConfigVersion.cmake \
+  /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Svg/Qt6SvgConfigVersionImpl.cmake \
+  /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Svg/Qt6SvgDependencies.cmake \
+  /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Svg/Qt6SvgTargets-relwithdebinfo.cmake \
+  /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Svg/Qt6SvgTargets.cmake \
+  /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6Svg/Qt6SvgVersionlessTargets.cmake \
   /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardAdditionalTargetInfo.cmake \
   /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardConfig.cmake \
   /home/marco/Qt/6.7.3/gcc_arm64/lib/cmake/Qt6VirtualKeyboard/Qt6VirtualKeyboardConfigVersion.cmake \
@@ -897,6 +906,7 @@ appStringMultipurposeDevice_autogen/timestamp: \
   CMakeFiles/3.25.1/CMakeSystem.cmake \
   appStringMultipurposeDevice_autogen/moc_predefs.h \
   /home/marco/progettiQt/StringMultipurposeDevice/main.cpp \
+  /home/marco/progettiQt/StringMultipurposeDevice/resources/resources.qrc \
   /home/marco/progettiQt/StringMultipurposeDevice/wifimanager.cpp \
   /home/marco/progettiQt/StringMultipurposeDevice/wifimanager.h \
   /usr/include/aarch64-linux-gnu/bits/atomic_wide_counter.h \

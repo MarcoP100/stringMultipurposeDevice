@@ -21,10 +21,12 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     WiFiManager wifiManager;
 
+    // Registrazione del tipo per esporre l'enum a QML
+    qmlRegisterType<WiFiManager>("com.wifiManager", 1, 0, "WiFiManager");
+
+     // Setta il context property per avere accesso a wifiManager come istanza
      engine.rootContext()->setContextProperty("wifiManager", &wifiManager);
 
-    // Registra la classe WiFiManager in modo che sia disponibile in QML
-    //qmlRegisterType<WiFiManager>("CustomComponents", 1, 0, "WiFiManager");
 
     const QUrl url(QStringLiteral("qrc:/StringMultipurposeDevice/main.qml"));
     QObject::connect(

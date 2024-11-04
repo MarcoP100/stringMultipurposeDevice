@@ -1,4 +1,4 @@
-set(qml_import_scanner_imports_count 39)
+set(qml_import_scanner_imports_count 40)
 set(qml_import_scanner_import_0 "CLASSNAME;QtQuick2Plugin;LINKTARGET;Qt6::qtquick2plugin;NAME;QtQuick;PATH;/home/marco/Qt/6.7.3/gcc_arm64/qml/QtQuick;PLUGIN;qtquick2plugin;PLUGINISOPTIONAL;;PREFER;:/qt-project.org/imports/QtQuick/;RELATIVEPATH;QtQuick;TYPE;module;")
 set(qml_import_scanner_import_1 "CLASSNAME;QtQmlMetaPlugin;LINKTARGET;Qt6::QmlMeta;NAME;QtQml;PATH;/home/marco/Qt/6.7.3/gcc_arm64/qml/QtQml;PLUGIN;qmlmetaplugin;PLUGINISOPTIONAL;;PREFER;:/qt-project.org/imports/QtQml/;RELATIVEPATH;QtQml;TYPE;module;")
 set(qml_import_scanner_import_2 "CLASSNAME;QtQmlPlugin;LINKTARGET;Qt6::qmlplugin;NAME;QtQml.Base;PATH;/home/marco/Qt/6.7.3/gcc_arm64/qml/QtQml/Base;PLUGIN;qmlplugin;PLUGINISOPTIONAL;;PREFER;:/qt-project.org/imports/QtQml/Base/;RELATIVEPATH;QtQml/Base;TYPE;module;")
@@ -38,4 +38,5 @@ set(qml_import_scanner_import_35 "CLASSNAME;QtQuick_VirtualKeyboard_Plugins_TCIm
 set(qml_import_scanner_import_36 "CLASSNAME;QtQuick_VirtualKeyboard_Plugins_ThaiPlugin;LINKTARGET;Qt6::qtvkbthaiplugin;NAME;QtQuick.VirtualKeyboard.Plugins.Thai;PATH;/home/marco/Qt/6.7.3/gcc_arm64/qml/QtQuick/VirtualKeyboard/Plugins/Thai;PLUGIN;qtvkbthaiplugin;PREFER;:/qt-project.org/imports/QtQuick/VirtualKeyboard/Plugins/Thai/;RELATIVEPATH;QtQuick/VirtualKeyboard/Plugins/Thai;TYPE;module;")
 set(qml_import_scanner_import_37 "CLASSNAME;QtQuick_VirtualKeyboard_SettingsPlugin;LINKTARGET;Qt6::qtvkbsettingsplugin;NAME;QtQuick.VirtualKeyboard.Settings;PATH;/home/marco/Qt/6.7.3/gcc_arm64/qml/QtQuick/VirtualKeyboard/Settings;PLUGIN;qtvkbsettingsplugin;PREFER;:/qt-project.org/imports/QtQuick/VirtualKeyboard/Settings/;RELATIVEPATH;QtQuick/VirtualKeyboard/Settings;TYPE;module;")
 set(qml_import_scanner_import_38 "CLASSNAME;QMultimediaQuickModule;COMPONENTS;/home/marco/Qt/6.7.3/gcc_arm64/qml/QtMultimedia/Video.qml;LINKTARGET;Qt6::quickmultimedia;NAME;QtMultimedia;PATH;/home/marco/Qt/6.7.3/gcc_arm64/qml/QtMultimedia;PLUGIN;quickmultimediaplugin;PREFER;:/qt-project.org/imports/QtMultimedia/;RELATIVEPATH;QtMultimedia;TYPE;module;")
+set(qml_import_scanner_import_39 "NAME;com.wifiManager;TYPE;module;")
 
