@@ -1,2 +1,0 @@
-set(__QT_DEPLOY_TARGET_appStringMultipurposeDevice_FILE /home/marco/progettiQt/StringMultipurposeDevice/build/RaspberryPi_qt6-Debug/appStringMultipurposeDevice)
-set(__QT_DEPLOY_TARGET_appStringMultipurposeDevice_TYPE EXECUTABLE)
