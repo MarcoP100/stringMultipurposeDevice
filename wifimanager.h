@@ -11,6 +11,7 @@ class WiFiManager : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool busy READ isBusy NOTIFY busyChanged)
+    // Q_PROPERTY(bool isConnected READ isConnected NOTIFY connectionStatusChanged)
 
 public:
     explicit WiFiManager(QObject *parent = nullptr);
@@ -18,7 +19,11 @@ public:
     Q_INVOKABLE void scanNetworks();
     Q_INVOKABLE void stopNetworkScan();       // Funzione per fermare la ricerca delle reti
     Q_INVOKABLE void connectToNetwork(const QString &ssid, const QString &password);
-    Q_INVOKABLE
+    Q_INVOKABLE bool isConnected();
+    Q_INVOKABLE QString getConnectedSSID();
+
+    // Aggiungi la funzione per disconnettersi
+    Q_INVOKABLE void disconnectNetwork();
 
     bool isBusy() const;
 
@@ -31,7 +36,9 @@ public:
         Connected,
         WrongPassword,
         ConnectionFailed,
-        SsidEmpty
+        SsidEmpty,
+        Disconnected,
+        ErrorDisconnection
     };
     Q_ENUM(ConnectionStatus)
 

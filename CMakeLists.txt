@@ -22,6 +22,7 @@ qt_add_qml_module(appStringMultipurposeDevice
     QML_FILES DynamometerOverCan.qml
     SOURCES wifimanager.h wifimanager.cpp
     RESOURCES resources/resources.qrc
+    QML_FILES colors.js
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

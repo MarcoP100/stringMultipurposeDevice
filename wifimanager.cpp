@@ -450,6 +450,76 @@ void WiFiManager::handleSavedNetworksFinished(int exitCode, QProcess::ExitStatus
 }
 
 
+// Funzione per verificare se � connesso
+bool WiFiManager::isConnected() {
+    QProcess isConnectedProcess;
+    QString program = "nmcli";
+    QStringList arguments;
+    arguments << "-t" << "-f" << "DEVICE,STATE" << "dev" << "status";
+    isConnectedProcess.start(program, arguments);
+    isConnectedProcess.waitForFinished();
+    QString output = isConnectedProcess.readAllStandardOutput().trimmed();
+    QString errorOutput = isConnectedProcess.readAllStandardError().trimmed();
+    qDebug() << "Stato connessione:" << output;
+    if (!errorOutput.isEmpty()) {
+        qDebug() << "Errore comando nmcli:" << errorOutput;
+    }
+
+    // Verifica se l'output � "connected"
+    // Cerca se wlan0 � nello stato "connected"
+    QStringList lines = output.split("\n");
+    for (const QString &line : lines) {
+        if (line.startsWith("wlan0:")) {
+            QString state = line.section(":", 1, 1).trimmed();
+            return state == "connected";
+        }
+    }
+
+    return false;  // Se wlan0 non � connesso
+}
+
+
+// Funzione per ottenere l'SSID della rete a cui siamo connessi
+QString WiFiManager::getConnectedSSID() {
+    QProcess ssidProcess;
+    QString program = "nmcli";
+    QStringList arguments;
+    arguments << "-t" << "-f" << "ACTIVE,SSID" << "dev" << "wifi";
+    ssidProcess.start(program, arguments);
+    ssidProcess.waitForFinished();
+    QString output = ssidProcess.readAllStandardOutput().trimmed();
+
+    // Filtra l'output per trovare la rete attiva
+    QStringList lines = output.split("\n");
+    for (const QString &line : lines) {
+        if (line.startsWith("yes:")) {
+            return line.section(":", 1, 1).trimmed();
+        }
+    }
+
+    return "Nessuna rete";  // Se non si trova una rete attiva
+}
+
+// Funzione per disconnettersi dalla rete
+void WiFiManager::disconnectNetwork() {
+    QProcess disconnectProcess;
+    QString program = "sudo";
+    QStringList arguments;
+    arguments << "nmcli" << "dev" << "disconnect" << "wlan0";
+
+    disconnectProcess.start(program, arguments);
+    disconnectProcess.waitForFinished();
+    if (disconnectProcess.exitCode() == 0) {
+        qDebug() << "Disconnesso dalla rete WiFi";
+        emitConnectionStatus(WiFiManager::Disconnected);
+    } else {
+        qDebug() << "Errore durante la disconnessione:" << disconnectProcess.readAllStandardError();
+        emitConnectionStatus(WiFiManager::ErrorDisconnection);
+    }
+}
+
+
+
 WiFiManager::~WiFiManager() {
     qDebug() << "DIstruttore";
     if (scanProcess.state() == QProcess::Running) {

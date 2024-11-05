@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.VirtualKeyboard
 import QtQuick.VirtualKeyboard.Settings
 import com.wifiManager 1.0
+import "colors.js" as Colors
 
 Item {
     id: dynaOnCanPage
@@ -19,6 +20,7 @@ Item {
     // Dizionario per memorizzare le password delle reti Wi-Fi in base al SSID
     //property var passwordDictionary: ({})
     property var selectedNetwork: { "ssid": "", "lock": false, "isSaved": false }
+    property bool firstSaved: true
 
 
     SwipeButtonArea {
@@ -37,42 +39,107 @@ Item {
             updateNetworkList(networks);
 
 
+
+            if (firstSaved) {
+                console.log("Reti salvate lette, avvio la verifica di connessione...");
+                if (wifiManager.isConnected()){
+                    console.log("Connessione avvenuta con successo.");
+                    wifiStatusCircle.border.color = Colors.GREEN_COLOR
+                    wifiStatusIcon.source = "qrc:/wifi_on.svg"
+
+                    var connectedSSID = wifiManager.getConnectedSSID();
+
+                    for (i = 0; i < networks.length; i++) {
+                        if (connectedSSID === networks[i].ssid) {
+                            selectedNetwork = {
+                                "ssid": networks[i].ssid,
+                                "lock": networks[i].requiresPassword,
+                                "isSaved": networks[i].networkKnown
+                            };
+                            networkName.text = selectedNetwork.ssid;
+                        }
+                    }
+
+                }
+
+            } else {
+                console.log("Non connesso");
+                wifiStatusCircle.border.color = Colors.DARK_GREY_COLOR
+                wifiStatusIcon.source = "qrc:/wifi_off_bk.svg"
+            }
+
+            // Imposta la variabile `firstTime` a false per evitare che venga ripetuto
+            firstSaved = false;
         }
 
+
+
         function onConnectionStatusChanged(status) {
+
+
             console.log("Status:", status)
             switch (status) {
             case WiFiManager.ErrorProcessStart:
                 console.log("Errore nell'avvio del processo.");
+                wifiStatusCircle.border.color = Colors.RED_COLOR
                 wifiStatusIcon.source = "qrc:/wifi_off.svg"
                 break;
             case WiFiManager.Timeout:
                 console.log("La connessione ha superato il timeout.");
+                wifiStatusCircle.border.color = Colors.RED_COLOR
                 wifiStatusIcon.source = "qrc:/wifi_off.svg"
                 break;
             case WiFiManager.Connecting:
                 console.log("Connessione in corso...");
-                wifiStatusIcon.source = "qrc:/wifi_search.svg"
+                wifiStatusCircle.border.color = Colors.YELLOW_COLOR
+                wifiStatusIcon.source = "qrc:/wifi_connecting.svg"
                 break;
             case WiFiManager.Connected:
                 console.log("Connessione avvenuta con successo.");
+                wifiStatusCircle.border.color = Colors.GREEN_COLOR
                 wifiStatusIcon.source = "qrc:/wifi_on.svg"
                 break;
             case WiFiManager.WrongPassword:
                 console.log("Password errata. Riprovare.");
+                wifiStatusCircle.border.color = Colors.RED_COLOR
                 wifiStatusIcon.source = "qrc:/wifi_off.svg"
                 passwordDialog.visible = true;
                 break;
             case WiFiManager.ConnectionFailed:
                 console.log("Connessione fallita.");
+                wifiStatusCircle.border.color = Colors.RED_COLOR
                 wifiStatusIcon.source = "qrc:/wifi_off.svg"
                 break;
+            case WiFiManager.Disconnected:
+                console.log("Disconnesso.");
+                wifiStatusCircle.border.color = Colors.RED_COLOR
+                wifiStatusIcon.source = "qrc:/wifi_off.svg"
+                break;
+            case WiFiManager.ErrorDisconnection:
+                console.log("Disconnessione fallita.");
+                if (wifiManager.isConnected()){
+                    wifiStatusCircle.border.color = Colors.GREEN_COLOR
+                    wifiStatusIcon.source = "qrc:/wifi_on.svg"
+
+                }else{
+                    wifiStatusCircle.border.color = Colors.RED_COLOR
+                    wifiStatusIcon.source = "qrc:/wifi_off.svg"
+                }
+
+                break;
+
+
+
             default:
                 console.log("Stato della connessione sconosciuto.");
+                wifiStatusCircle.border.color = Colors.RED_COLOR
                 wifiStatusIcon.source = "qrc:/wifi_off.svg"
             }
         }
     }
+
+
+
     ListModel {
         id: wifiListModel
     }
@@ -100,10 +167,10 @@ Item {
 
     }
 
-    /*Component.onCompleted: {
-            // Esegui una ricerca delle reti all'apertura della pagina
-            wifiManager.getSavedNetworks();
-        }*/
+    Component.onCompleted: {
+        // Esegui una ricerca delle reti all'apertura della pagina
+        wifiManager.scanNetworks();
+    }
 
     function updateNetworkList(networks) {
         // Mappa per evitare duplicati e per mantenere traccia degli elementi attuali
@@ -311,9 +378,10 @@ Item {
                                         "lock": model.requiresPassword,
                                         "isSaved": model.networkKnown
                                     };
-                                    networkButton.text = selectedNetwork.ssid;
+                                    networkName.text = selectedNetwork.ssid;
                                     //addNetworkPassword(selectedNetwork.ssid);
                                     networkDialog.visible = false;  // Chiudi il dialogo dopo la selezione
+                                    needsPassword();
                                 }
                             }
                         }
@@ -371,11 +439,24 @@ Item {
             }
         }
         z: 5 // Posiziona quest'area sotto il dialogo, ma sopra il contenuto del background
+
+
+
+    }
+
+    MouseArea {
+        id: wifiLabelMouseArea
+        anchors.fill: parent // Copre l'intero schermo
+        visible: wifiIcon.state = "expanded"// Visibile solo quando il dialogo � aperto
+        onClicked: {
+            wifiIcon.state = ""
+
+        }
+        z: 4 // Posiziona quest'area sotto il dialogo, ma sopra il contenuto del background
     }
 
 
-
-    Rectangle {
+    /*Rectangle {
 
         width: 400
         height: 200
@@ -392,37 +473,8 @@ Item {
 
         }
 
-        Button {
-            id: networkButton
-            width: 200
-            height: 30
-            text: "Seleziona una rete"
-            anchors.top: wifiText.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            // Quando si preme il pulsante, apre il popup
-            onClicked: {
-                console.log("Pulsante cliccato, apertura overlay o dialog");
-                networkDialog.visible = true;
-
-                startNetworkScan();
-
-            }
-        }
 
 
-
-
-
-
-        Timer {
-            id: updateTimer
-            interval: 4000  // Aggiorna ogni 5000 ms (5 secondi)
-            repeat: true
-            running: false
-            onTriggered: {
-                wifiManager.getAvailableNetworks();
-            }
-        }
 
         // Pulsante per connettersi
         Button {
@@ -443,31 +495,215 @@ Item {
 
 
         }
+    }*/
+    // Indicatore di stato (LED)
+    Rectangle {
+        id: wifiIcon
+        width: 40
+        height: 40
+        radius: 20
+        color: "lightblue"
+        border.color: "black" // Colore del bordo
+        border.width: 1  // Spessore del bordo
+        z: 20
+        anchors {
 
-        // Indicatore di stato (LED)
+            left: dynaOnCanPage.left
+            top: dynaOnCanPage.top
+            leftMargin: 10
+            topMargin: 10
+
+        }
+        state: ""
+        // Animazione per trasformare l'icona in pulsante
+        states: [
+            State {
+                name: "expanded"
+                PropertyChanges {
+                    target: wifiIcon
+                    width: Math.min(40 + networkName.implicitWidth + 40, 300) // Calcola la larghezza massima
+                    height: 40
+                    radius: height / 2
+                }
+                PropertyChanges {
+                    target: networkName
+                    opacity: 1.0
+                }
+            }
+        ]
+        transitions: Transition {
+            from: ""
+            to: "expanded"
+            reversible: true
+            SequentialAnimation {
+                PropertyAnimation {
+                    target: wifiIcon
+                    properties: "width, height"
+                    duration: 400
+                    easing.type: Easing.OutBack
+                }
+                PropertyAnimation {
+                    target: wifiIcon
+                    property: "radius"
+                    duration: 200
+                }
+                PropertyAnimation {
+                    target: networkName
+                    property: "opacity"
+                    duration: 300
+                }
+            }
+
+        }
+
+
+        // Nome della rete WiFi, che appare solo quando espanso
+        Text {
+            id: networkName
+            text: "Nome Rete WiFi"
+            anchors.verticalCenter: wifiIcon.verticalCenter
+            anchors.left: wifiStatusCircle.right
+            anchors.leftMargin: 10 // Margine tra l'icona e il testo
+            opacity: 0.0 // Inizia invisibile
+            color: "black"
+        }
+
+        MouseArea {
+            id: networkMouseArea
+            anchors.fill: parent // Copre l'intero schermo
+            visible: wifiIcon.state = "expanded"// Visibile solo quando il dialogo � aperto
+            onClicked: {
+                networkDialog.visible = true;
+                startNetworkScan();
+            }
+
+        }
+
+
+        //anchors.verticalCenter: wifiNetworks.verticalCenter
+
+
         Rectangle {
-            id: statusLed
-            //width: 20
-            //height: 20
-            //radius: 10
-            //color: "red"
-            anchors.top: networkButton.bottom
-            anchors.left: wifiConnection.right
-            anchors.topMargin: 10
-            anchors.leftMargin: 20
-            //anchors.verticalCenter: wifiNetworks.verticalCenter
+            id: wifiStatusCircle
+            width: 40
+            height: 40
+            radius: 20
+            color: "white"
+            border.color: Colors.DARK_GREY_COLOR  // Colore del bordo
+            border.width: 1  // Spessore del bordo
+            z: 21
+            anchors {
+
+                left: dynaOnCanPage.left
+                top: dynaOnCanPage.top
+                leftMargin: 10
+                topMargin: 10
+
+            }
 
             Image {
                 id: wifiStatusIcon
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                anchors.rightMargin: 10
-                //source: requiresPassword ? "qrc:/wifiLock.svg" : "qrc:/wifiUnLock.svg"
+                anchors.centerIn: wifiStatusCircle
+                source: "qrc:/wifi_off_bk.svg"
                 visible: true // Mostra l'icona del lucchetto se � richiesta una password
 
             }
+
+            MouseArea {
+                id: wifiMouseArea
+                anchors.fill: parent
+
+                onClicked: {
+
+                    console.log("Icona cliccata brevemente");
+
+                    // Mostra o nasconde il pulsante per la rete
+                    //networkButton.visible = !networkButton.visible;
+                    wifiIcon.state = wifiIcon.state === "" ? "expanded" : ""
+                }
+
+                onPressAndHold:{
+                    if (wifiManager.isConnected()) {
+                        // Avvia disconnessione
+                        console.log("Disconnessione in corso...");
+                        wifiManager.disconnectNetwork();
+                    } else {
+                        if (selectedNetwork.ssid !== ""){
+                            // Avvia connessione
+                            console.log("Connessione in corso...");
+                            needsPassword();
+                        }
+                    }
+                }
+
+
+                onReleased: {
+                    console.log("Mouse rilasciato");
+                    longPressTimer.stop(); // Ferma il timer per evitare falsi trigger
+                }
+
+                Timer {
+                    id: longPressTimer
+                    interval: 3000 // 3 secondi
+                    repeat: false
+                    onTriggered: wifiMouseArea.onPressAndHold
+                }
+
+                onPressed: {
+                    longPressTimer.start(); // Avvia il timer per rilevare la pressione prolungata
+                }
+            }
         }
     }
+
+    /*Rectangle {
+        id: networkButton
+        width: 200
+        height: 40
+        radius: height / 2  // Arrotonda i lati corti
+        color: "lightblue"
+
+        MouseArea {
+            id: networkMouseArea
+            anchors.fill: parent
+
+            onClicked: {
+                console.log("Pulsante cliccato, apertura overlay o dialog");
+                networkDialog.visible = true;
+
+                startNetworkScan();
+
+            }
+        }
+
+        Text {
+            anchors.centerIn: parent
+            text: "Seleziona una rete"
+            color: "white"
+        }
+    }*/
+
+
+
+    /*Button {
+        id: networkButton
+        width: 200
+        height: 30
+        z: 10
+        text: "Seleziona una rete"
+        anchors.left: wifiStatusCircle.right
+        anchors.leftMargin: 10
+        visible: false // Inizialmente nascosto
+        // Quando si preme il pulsante, apre il popup
+        onClicked: {
+            console.log("Pulsante cliccato, apertura overlay o dialog");
+            networkDialog.visible = true;
+
+            startNetworkScan();
+
+        }
+    }*/
+
 
     Rectangle {
         id: passwordDialog

@@ -4,8 +4,9 @@
         <file>wifiUnLock.svg</file>
         <file>wifi_off.svg</file>
         <file>wifi_on.svg</file>
-        <file>wifi_search.svg</file>
         <file>key_no.svg</file>
         <file>key_on.svg</file>
+        <file>wifi_connecting.svg</file>
+        <file>wifi_off_bk.svg</file>
     </qresource>
 </RCC>
