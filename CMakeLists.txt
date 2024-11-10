@@ -6,7 +6,17 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 6.2 COMPONENTS Quick VirtualKeyboard Svg REQUIRED)
+find_package(Qt6 6.2 COMPONENTS Quick VirtualKeyboard Svg Core Network DBus REQUIRED )
+
+# Trova PkgConfig
+find_package(PkgConfig REQUIRED)
+
+pkg_check_modules(LIBNM REQUIRED libnm)
+include_directories(${LIBNM_INCLUDE_DIRS})
+include_directories(/usr/include/libnm)
+
+link_directories(${LIBNM_LIBRARY_DIRS})
+
 
 qt_add_executable(appStringMultipurposeDevice
     main.cpp
@@ -20,9 +30,14 @@ qt_add_qml_module(appStringMultipurposeDevice
     QML_FILES MainPage.qml
     QML_FILES SwipeButtonArea.qml
     QML_FILES DynamometerOverCan.qml
-    SOURCES wifimanager.h wifimanager.cpp
+    SOURCES wifimanager_h wifimanager_cpp
     RESOURCES resources/resources.qrc
     QML_FILES colors.js
+    SOURCES tcpclient.h tcpclient.cpp
+    SOURCES wifimanager.h wifimanager.cpp
+    QML_FILES wifiScanDialog.qml
+    QML_FILES NetworkList.qml
+    QML_FILES DynamometerOverCan_copy.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -36,8 +51,9 @@ set_target_properties(appStringMultipurposeDevice PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
+
 target_link_libraries(appStringMultipurposeDevice
-    PRIVATE Qt6::Quick Qt6::VirtualKeyboard Qt6::Svg)
+    PRIVATE Qt6::Quick Qt6::VirtualKeyboard Qt6::Svg Qt6::Network Qt6::DBus ${LIBNM_LIBRARIES})
 
 #qt_import_plugins(appStringMultipurposeDevice
 #    INCLUDE Qt::QVirtualKeyboardPlugin

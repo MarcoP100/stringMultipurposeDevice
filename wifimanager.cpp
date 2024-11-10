@@ -1,108 +1,21 @@
+#include <NetworkManager.h>
 #include "wifimanager.h"
-#include <QProcess>
-#include <QDebug>
-#include <QRegularExpression>
 
 
-WiFiManager::WiFiManager(QObject *parent) : QObject(parent) {
-    // Inizializza il processo e connetti il segnale di completamento
-    connect(&scanProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-            this, &WiFiManager::handleProcessFinished);
-    /*connect(&process, &QProcess::readyReadStandardOutput,
-            this, &WiFiManager::handleReadyRead);*/
-
-    //connect(&timeoutTimer, &QTimer::timeout, this, &WiFiManager::onTimeout);
-
-    qDebug() << "WiFiManager costruito e segnale 'finished' connesso.";
-
-
-    // Configura il timer di connessione
-    connectionTimer.setInterval(this->CONNECT_TIMEOUT_MS); // Timeout di 30 secondi
-    connectionTimer.setSingleShot(true);
-    connect(&connectionTimer, &QTimer::timeout, this, &WiFiManager::handleConnectionTimeout);
-
-    // Configura il timer di scansione delle reti
-    scanNetworksTimer.setInterval(100); //
-    scanNetworksTimer.setSingleShot(true);
-    connect(&scanNetworksTimer, &QTimer::timeout, this, &WiFiManager::handleSavedNetworksTimeout);
-
-
-
-}
-
-
-
-
-
-
-// Emetti il segnale con lo stato della connessione
-void WiFiManager::emitConnectionStatus(ConnectionStatus status) {
-    emit connectionStatusChanged(status);
-}
-
-void WiFiManager::scanNetworks()
+WiFiManager::WiFiManager(QObject *parent)
+    : QObject{parent}
 {
-    setBusy(true);
-    if (this->scanForSavedNetworks){
-        getSavedNetworks();
-
-    } else {
-        startScanNetworks();
+    // Connessione al bus di sistema
+    QDBusConnection bus = QDBusConnection::systemBus();
+    if (!bus.isConnected()) {
+        qWarning() << "Unable to connect to the DBus system bus";
+        return;
     }
-}
 
-void WiFiManager::runIwlistCommand() {
-    QString program = "sudo";
-    QStringList arguments;
-    arguments << "iwlist" << "wlan0" << "scan";
+    listNetworkDevices();
+    checkCurrentConnectionStatus();
+    setupPropertyChangedSignal();
 
-    scanProcess.start(program, arguments);
-
-    if (!scanProcess.waitForStarted()) {
-        qDebug() << "Il processo iwlist non � riuscito a partire.";
-        setBusy(false);
-    } else {
-        qDebug() << "Processo di scansione avviato.";
-        //timeoutTimer.start(5000);
-    }
-}
-
-void WiFiManager::startScanNetworks()
-{
-    setBusy(true);
-    //QProcess process;
-
-    // Ottieni l'ambiente di sistema e aggiungi le variabili necessarie
-    //QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    //process.setProcessEnvironment(env);
-    qDebug() << "Chiamata getAvailableNetworks()";
-    if (scanProcess.state() == QProcess::Running) {
-        qDebug() << "Un processo di scansione � gi� in esecuzione, lo fermo...";
-        scanProcess.terminate();  // Se un processo di scansione � gi� in corso, termina prima di avviarne uno nuovo
-        if (!scanProcess.waitForFinished(3000)) {  // Attendi al massimo 3 secondi per la terminazione
-            qDebug() << "Il processo non ha terminato nei tempi previsti. Procedo con kill().";
-            scanProcess.kill();  // Se `terminate()` non riesce, forza la terminazione
-            scanProcess.waitForFinished();
-        }
-        qDebug() << "Processo di scansione precedente terminato.";
-    }else{
-       qDebug() << "Nessun processo esistente";
-    }
-    qDebug() << "Avvio un nuovo processo di scansione delle reti WiFi.";
-
-    runIwlistCommand();
-
-}
-
-void WiFiManager::handleReadyRead()
-{
-    QString output = scanProcess.readAllStandardOutput();
-    qDebug() << "Output (readyRead):" << output;
-}
-
-bool WiFiManager::isBusy() const
-{
-    return m_busy;
 }
 
 
@@ -115,415 +28,389 @@ void WiFiManager::setBusy(bool busy)
 }
 
 
-void WiFiManager::stopNetworkScan()
+bool WiFiManager::isBusy() const
 {
-    qDebug() << "Chiamata stopNetworkScan()";
-    if (scanProcess.state() == QProcess::Running) {
-        qDebug() << "Un processo di scansione � gi� in esecuzione, lo fermo...";
-        scanProcess.terminate();  // Termina il processo in modo controllato
-        if (!scanProcess.waitForFinished(2000)) {  // Attendi fino a 2 secondi per la terminazione
-            qDebug() << "Il processo non ha terminato nei tempi previsti. Procedo con kill().";
-            scanProcess.kill();  // Forza la terminazione se non risponde
-        }
-        qDebug() << "Processo di scansione terminato.";
+    return m_busy;
+}
+
+WiFiManager::ConnectionStatus WiFiManager::statusConnection() const
+{
+    return m_connectionStatus;
+}
+
+
+void WiFiManager::scanNetworks()
+{
+    setBusy(true);
+    if (scanForSavedNetworks){
+        getSavedNetworks();
+
+    }
+    //requestScan();
+}
+
+void WiFiManager::requestScan()
+{
+    QDBusInterface iface("org.freedesktop.NetworkManager",
+                         m_wifiDevicePath,
+                         "org.freedesktop.NetworkManager.Device.Wireless",
+                         QDBusConnection::systemBus());
+
+    // Richiedi una scansione delle reti disponibili
+
+    QVariantMap options;
+    QDBusMessage response = iface.call("RequestScan", QVariant::fromValue(options));
+
+    if (!response.errorMessage().isEmpty()) {
+        qDebug() << "Failed to initiate network scan:" << response.errorMessage();
     } else {
-        qDebug() << "Nessun processo di scansione in esecuzione.";
+        qDebug() << "Network scan command sent successfully.";
+    }
+    qDebug() << "Request scan";
+
+}
+
+
+void WiFiManager::onPropertiesChanged(QString interfaceName, QVariantMap changedProperties, QStringList invalidatedProperties)
+{
+    //qDebug() << "PropertiesChanged signal received for interface:" << interfaceName;
+    // Verifica se l'interfaccia � quella giusta
+    if (interfaceName == "org.freedesktop.NetworkManager.Device.Wireless") {
+        //qDebug() << "Property changed: " << changedProperties;
+        // Controlla se la propriet� "AccessPoints" � tra quelle modificate
+        if (changedProperties.contains("AccessPoints")) {
+            qDebug() << "Access points property changed, getting updated list of networks.";
+            // Chiama GetAccessPoints per ottenere l'elenco delle reti aggiornato
+            getAccessPoints();
+        }
+    }else if (interfaceName == "org.freedesktop.NetworkManager.Device"){
+        if (changedProperties.contains("State")) {
+            uint newState = changedProperties.value("State").toUInt();
+            readConnectionStatus(newState);
+        }
     }
 }
 
-void WiFiManager::handleProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void WiFiManager::getAccessPoints()
 {
-    //timeoutTimer.stop();  // Ferma il timer quando il processo finisce
+    // Chiamata per ottenere i punti di accesso (reti Wi-Fi)
+    QDBusInterface iface("org.freedesktop.NetworkManager",
+                         m_wifiDevicePath,
+                         "org.freedesktop.NetworkManager.Device.Wireless",
+                         QDBusConnection::systemBus());
+
+    QDBusReply<QList<QDBusObjectPath>> apReply = iface.call("GetAccessPoints");
+    if (apReply.isValid()) {
+        QList<QDBusObjectPath> accessPoints = apReply.value();
+        // Stampa l'elenco completo dei percorsi degli access points
+        qDebug() << "Number of access points found:" << accessPoints.size();
+        handleNetworkScanResult(accessPoints);
+    } else {
+        emit errorOccurred("Failed to get access points");
+    }
 
     setBusy(false);
-    qDebug() << "handleProcessFinished() chiamato con codice di uscita:" << exitCode << ", stato di uscita:" << exitStatus;
-    if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-        QString iwlistOutput = scanProcess.readAllStandardOutput();
-        qDebug() << "Output iwlist:" << iwlistOutput;  // Stampa l'output grezzo di nmcli
-        QList<NetworkInfo> networks = parseNetworks(iwlistOutput);
-
-        if (!networks.isEmpty()) {
-
-            QVariantList variantNetworks;
-            for (const NetworkInfo &network : networks) {
-                variantNetworks.append(toVariantMap(network));
-            }
-
-            qDebug() << "Reti trovate:" << variantNetworks;
-            emit availableNetworksChanged(variantNetworks);
-        } else {
-            qDebug() << "Nessuna rete trovata. Non emetto il segnale.";
-        }
-
-    } else{
-        qDebug() << "Errore nel processo nmcli, codice di uscita:" << exitCode;
-        emit availableNetworksChanged(QVariantList());  // Invia una lista vuota in caso di errore
-    }
-
-
-}
-
-
-QList<WiFiManager::NetworkInfo> WiFiManager::parseNetworks(const QString &iwlistOutput) {
-    QList<NetworkInfo> networks;
-    QSet<QString> uniqueNetworks;
-
-    QStringList lines = iwlistOutput.split("\n", Qt::SkipEmptyParts);
-    NetworkInfo currentNetwork;
-
-    for (const QString &line : lines) {
-        if (line.contains("ESSID:")) {
-            currentNetwork.ssid = line.section("ESSID:", 1, 1).replace("\"", "").trimmed();
-            currentNetwork.isSaved = this->savedNetworks.contains(currentNetwork.ssid);
-            qDebug() << "Rete trovata:" << currentNetwork.ssid << (currentNetwork.isSaved ? "(Salvata)" : "(Non salvata)");
-
-
-        }
-        if (line.contains("Encryption key:on")) {
-            currentNetwork.requiresPassword = true;
-        }
-        if (line.contains("Cell")) {
-            if (!currentNetwork.ssid.isEmpty() &&
-                !currentNetwork.ssid.contains("\\x00") &&
-                !uniqueNetworks.contains(currentNetwork.ssid)) {
-
-                networks.append(currentNetwork);
-
-
-                uniqueNetworks.insert(currentNetwork.ssid);
-            }
-            // Reset per la prossima cella
-            currentNetwork = NetworkInfo();
-        }
-    }
-
-    // fine linee, salvo se ho trovato una rete valida
-    if (!currentNetwork.ssid.isEmpty() &&
-        !currentNetwork.ssid.contains("\\x00") &&
-        !uniqueNetworks.contains(currentNetwork.ssid)) {
-
-        networks.append(currentNetwork);
-        uniqueNetworks.insert(currentNetwork.ssid);
-    }
-    // Stampa dell'intera lista
-    for (const NetworkInfo &network : networks) {
-        qDebug() << network.isSaved;
-    }
-    return networks;
 }
 
 
 
-/*void WiFiManager::onTimeout()
+void WiFiManager::handleNetworkScanResult(const QList<QDBusObjectPath> &networks)
 {
-    qDebug() << "Timeout del processo raggiunto. Termino il processo iwlist.";
-    if (process.state() == QProcess::Running) {
-        process.kill();  // Forza la terminazione del processo
-        process.waitForFinished();  // Assicurati che il processo sia completamente terminato
-        qDebug() << "Processo terminato a causa del timeout.";
+    QStringList networkList;
+    qDebug() << "Handle";
+    for (const QDBusObjectPath &networkPath : networks) {
+        QDBusInterface apIface("org.freedesktop.NetworkManager",
+                               networkPath.path(),
+                               "org.freedesktop.NetworkManager.AccessPoint",
+                               QDBusConnection::systemBus());
+
+        QVariant ssidReply = apIface.property("Ssid");
+        if (ssidReply.isValid() && !ssidReply.isNull()) {
+            QString ssid = ssidReply.toString();
+            if (!networkList.contains(ssid)) {
+                qDebug() << "Found SSID:" << ssid;
+                networkList.append(ssid);
+            } else {
+                qDebug() << "Duplicate SSID found, ignoring:" << ssid;
+            }
+        } else {
+            qDebug() << "Failed to get SSID for access point:" << networkPath.path();
+        }
     }
+    qDebug() << "Reti trovate:" << networkList;
+    emit scanCompleted(networkList);
 }
-*/
+
 
 void WiFiManager::connectToNetwork(const QString &ssid, const QString &password)
 {
-
-    // Controlla se c'� gi� un processo di connessione in corso
-    if (this->connectProcess.state() == QProcess::Running) {
-        qDebug() << "Connessione gi� in corso. Attendere il completamento.";
-        //emit connectionStatusChanged("Connessione gi� in corso");
-        return;
-    }
-
-    // Escapa l'SSID per gestire eventuali caratteri speciali
-    QString escapedSsid = ssid;
-    escapedSsid.replace("\"", "\\\""); // Sostituisce le virgolette con sequenze di escape
-
-    // Controllo SSID non vuoto
-    if (escapedSsid.isEmpty()) {
-        qDebug() << "Errore: SSID non valido";
-        emitConnectionStatus(WiFiManager::SsidEmpty);
-        return;
-    }
-
-    // Definisci il programma e gli argomenti per QProcess
-    QString program = "sudo";
-    QStringList arguments;
-    arguments << "nmcli" << "dev" << "wifi" << "connect" << escapedSsid;
-
-    if (!password.isEmpty()) {
-        arguments << "password" << password;
-    }
-
-    // Collegamento del segnale finished per evitare il blocco
-    connect(&this->connectProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-            this, &WiFiManager::handleConnectionFinished, Qt::UniqueConnection);
-
-    // Avvia il processo in modo asincrono
-    QString commandString = program + " " + arguments.join(" ");
-    if (!password.isEmpty()) {
-        commandString.replace(password, "****");
-    }
-
-    qDebug() << "Eseguendo il comando:" << commandString;
-    this->connectionKilled = false;
-    this->connectProcess.start(program, arguments);
-
-    // Verifica se il processo � stato avviato correttamente
-    if (!this->connectProcess.waitForStarted()) {
-        qDebug() << "Errore: impossibile avviare il processo";
-        this->connectProcess.kill();
-        this->connectionKilled = true;
-        emitConnectionStatus(WiFiManager::ErrorProcessStart);
-        return;
-    }
-
-    if (this->connectionTimer.isActive()) {
-        this->connectionTimer.stop();
-    }
-    // Avvia il timer di connessione
-    this->connectionTimer.start();
-
-
-    // Aggiorna lo stato a "in connessione" appena il processo viene avviato
-   emitConnectionStatus(WiFiManager::Connecting);
+    // Creare e attivare una connessione con `AddAndActivateConnection`
+    // ...
 }
 
-
-void WiFiManager::handleConnectionTimeout() {
-    if (this->connectProcess.state() == QProcess::Running) {
-        this->connectProcess.kill();
-        this->connectionKilled = true;
-        qDebug() << "Errore: il processo di connessione ha superato il timeout";
-        emitConnectionStatus(WiFiManager::Timeout);
-    }
-}
-
-void WiFiManager::handleConnectionFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void WiFiManager::disconnectNetwork()
 {
-    if (this->connectionTimer.isActive()) {
-        this->connectionTimer.stop();
-    }
-    if (this->connectionKilled) {
-        // Se il processo � stato terminato dal timeout, non emettere ulteriori segnali
-        return;
-    }
-
-    if (exitCode == 0 && exitStatus == QProcess::NormalExit) {
-        qDebug() << "Connesso";
-        this->scanForSavedNetworks = true;
-        emitConnectionStatus(WiFiManager::Connected);
-    } else {
-        QString errorOutput = this->connectProcess.readAllStandardError();
-        qDebug() << "Connessione fallita, errore:" << errorOutput;
-
-        if (errorOutput.contains("Secrets were required, but not provided") ||
-            (errorOutput.contains("802-11-wireless-security.psk: property is invalid"))) {
-            // Errore specifico per password errata o mancante
-            emitConnectionStatus(WiFiManager::WrongPassword); // Emetti il segnale per richiedere la password
-        } else {
-            qDebug() << "Errore di connessione generico.";
-            emitConnectionStatus(WiFiManager::ConnectionFailed);
-        }
-    }
+    // Disattivare la connessione con `DeactivateConnection`
+    // ...
 }
 
 
-QVariantMap WiFiManager::toVariantMap(const NetworkInfo &network) {
-    QVariantMap map;
-    map["ssid"] = network.ssid;
-    map["requiresPassword"] = network.requiresPassword;
-    map["networkKnown"] = network.isSaved;
-    return map;
-}
-
-
-void WiFiManager::getSavedNetworks()
+QStringList WiFiManager::getSavedNetworks()
 {
+    qDebug() << "Ricerca reti salvate";
+    QDBusInterface iface("org.freedesktop.NetworkManager",
+                         "/org/freedesktop/NetworkManager/Settings",
+                         "org.freedesktop.NetworkManager.Settings",
+                         QDBusConnection::systemBus());
 
-    // Controlla se c'� gi� un processo di connessione in corso
-    if (this->savedNetworksProcess.state() == QProcess::Running) {
-        emit savedNetworksChanged("Ricerca gi� in corso");
-        return;
-    }
+    QStringList savedNetworks;
 
-    // Definisci il programma e gli argomenti per QProcess
-    QString program = "nmcli";
-    QStringList arguments;
-    arguments << "-t" << "-f" << "NAME,UUID,TYPE" << "connection" << "show";
+    QDBusReply<QList<QDBusObjectPath>> reply = iface.call("ListConnections");
 
-    // Collegamento del segnale finished per evitare il blocco
-    connect(&this->savedNetworksProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-            this, &WiFiManager::handleSavedNetworksFinished, Qt::UniqueConnection);
+    if (reply.isValid()) {
+        for (const QDBusObjectPath &connectionPath  : reply.value()) {
+            QDBusInterface connIface("org.freedesktop.NetworkManager",
+                                     connectionPath.path(),
+                                     "org.freedesktop.NetworkManager.Settings.Connection",
+                                     QDBusConnection::systemBus());
 
-    // Avvia il processo in modo asincrono
-    qDebug() << "Eseguendo il comando ricerca reti salvate";
-    this->savedNetworksProcess.start(program, arguments);
+            QDBusMessage message = connIface.call("GetSettings");
+            if (message.type() == QDBusMessage::ReplyMessage) {
+                // Ottieni il contenuto del messaggio di risposta
+                if (!message.arguments().isEmpty()) {
+                    QVariant argument = message.arguments().first();
+                    // Stampa il contenuto di settings per capire cosa contiene
+                    const QDBusArgument &dbusArg = argument.value<QDBusArgument>();
+                    // Converti l'argomento in QVariantMap
+                    // Definisci la mappa in cui inserire i dati
+                    QMap<QString, QVariantMap> settings;
+                    dbusArg >> settings;  // Estrai i dati da QDBusArgument
 
-    // Verifica se il processo � stato avviato correttamente
-    if (!this->savedNetworksProcess.waitForStarted()) {
-        qDebug() << "Errore: impossibile avviare il processo. Riprovo...";
-        for (int i = 0; i < 3; ++i) { // Tentativi di riavvio del processo
-            qDebug() << "Tentativo " << (i + 1) << " di avvio del processo";
-            this->savedNetworksProcess.start(program, arguments);
-            if (this->savedNetworksProcess.waitForStarted()) {
-                break;
+                    // Stampa il contenuto di settings per capire cosa contiene
+                    //qDebug() << "Settings QVariantMap:" << settings;
+
+                    if (settings.contains("802-11-wireless")) {
+                        QVariantMap wifiSettings = settings.value("802-11-wireless");
+                        // Estrai l'SSID (memorizzato come QByteArray)
+                        QByteArray ssidArray = wifiSettings.value("ssid").toByteArray();
+                        QString ssid = QString::fromUtf8(ssidArray);
+                        qDebug() << "SSID:" << ssid;
+                        if (!ssid.isEmpty() && !ssid.isNull() && !savedNetworks.contains(ssid)){
+                            savedNetworks.append(ssid);
+                        }
+                    }
+
+                } else {
+                    qDebug() << "Connection settings not found in settings QVariantMap";
+                }
+
+            } else {
+                qDebug() << "Failed to get settings for connection:" << connectionPath.path();
+                qDebug() << "Error:" << message.errorMessage();
             }
         }
-        if (this->savedNetworksProcess.state() != QProcess::Running) {
-            qDebug() << "Errore: impossibile avviare il processo dopo diversi tentativi";
-            this->savedNetworksProcess.kill();
-            return;
-        }
+    } else {
+        qDebug() << "Failed to list connections:" << reply.error().message();
     }
 
-
-    // timer
-    if (this->knownNetworksTimer.isActive()) {
-        this->knownNetworksTimer.stop();
-    }
-    // Avvia il timer di connessione
-    this->knownNetworksTimer.start();
-
-    // Aggiorna lo stato a "in connessione" appena il processo viene avviato
-    emit savedNetworksChanged("In corso");
+    scanForSavedNetworks = false;
+    qDebug() << "Reti salvate:" << savedNetworks;
+    return savedNetworks;
 }
 
-
-void WiFiManager::handleSavedNetworksTimeout() {
-    if (this->savedNetworksProcess.state() == QProcess::Running) {
-        this->savedNetworksProcess.kill();
-        qDebug() << "Errore: il processo ha superato il timeout";
-    }
-}
-
-
-
-void WiFiManager::handleSavedNetworksFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void WiFiManager::listNetworkDevices()
 {
-    if (this->knownNetworksTimer.isActive()) {
-        this->knownNetworksTimer.stop();
+    // Interfaccia per NetworkManager
+    QDBusInterface iface("org.freedesktop.NetworkManager",
+                         "/org/freedesktop/NetworkManager",
+                         "org.freedesktop.NetworkManager",
+                         QDBusConnection::systemBus());
+
+    // Ottieni la lista dei dispositivi gestiti da NetworkManager
+    QDBusReply<QList<QDBusObjectPath>> reply = iface.call("GetDevices");
+    if (reply.isValid()) {
+        QList<QDBusObjectPath> devicePaths = reply.value();
+
+
+        for (const QDBusObjectPath &devicePath : devicePaths) {
+            // Per ogni dispositivo, creiamo una nuova interfaccia per ottenere dettagli
+            QDBusInterface deviceIface("org.freedesktop.NetworkManager",
+                                       devicePath.path(),
+                                       "org.freedesktop.NetworkManager.Device",
+                                       QDBusConnection::systemBus());
+
+            // Ottieni il tipo di dispositivo
+            QVariant typeReply = deviceIface.property("DeviceType");
+            qDebug() << "Device device:" << typeReply;
+            if (!typeReply.isNull()) {
+
+
+                uint deviceType = typeReply.toUInt();
+                // 2 indica un dispositivo WiFi
+                if (deviceType == NM_DEVICE_TYPE_WIFI) {
+                    qDebug() << "Found WiFi device:" << devicePath.path();
+                    // Salva questo percorso per usi futuri (es. scansione)
+                    m_wifiDevicePath = devicePath.path();
+                    return;
+                }
+            }  else {
+
+                qDebug() << "Failed to get device type for:" << devicePath.path();
+
+            }
+        }
+        qWarning() << "No WiFi device found";
+    } else {
+        qWarning() << "Failed to get devices from NetworkManager";
     }
-    if (exitCode == 0 && exitStatus == QProcess::NormalExit) {
-        qDebug() << "Ricerca finita";
-        QString output = this->savedNetworksProcess.readAllStandardOutput();
-        qDebug() << "output:" << output;
+}
 
-        savedNetworks.clear();
 
-        QStringList lines = output.split("\n");
-        for (const QString &line : lines) {
-            QStringList fields = line.split(":"); // Dividi i campi (in formato "NAME:TYPE")
-            if (fields.size() == 3) {
-                QString name = fields[0].trimmed();
-                QString uuid = fields[1].trimmed();
-                QString type = fields[2].trimmed();
+void WiFiManager::checkCurrentConnectionStatus()
+{
+    if (m_wifiDevicePath.isEmpty()) {
+        qWarning() << "WiFi device path is empty. Unable to check connection status.";
+        return;
+    }
 
-                if (type == "802-11-wireless" && !name.isEmpty()) {
-                    // Usa nmcli per ottenere direttamente l'SSID della connessione
-                    QProcess ssidProcess;
-                    QStringList ssidArguments;
-                    ssidArguments << "-t" << "-f" << "802-11-wireless.ssid" << "connection" << "show" << uuid;
-                    ssidProcess.start("nmcli", ssidArguments);
-                    ssidProcess.waitForFinished();
-                    QString ssid = ssidProcess.readAllStandardOutput().trimmed();
-                    ssid = ssid.section(":", 1).trimmed();
+    QDBusInterface deviceIface("org.freedesktop.NetworkManager",
+                               m_wifiDevicePath,
+                               "org.freedesktop.NetworkManager.Device",
+                               QDBusConnection::systemBus());
 
-                    qDebug() << "SSID trovato:" << ssid;
-                    savedNetworks.append(ssid);
+
+    QVariant stateVariant = deviceIface.property("State");
+    if (stateVariant.isValid()) {
+        uint state = stateVariant.toUInt();
+        qDebug() << "Current WiFi device state:" << state;
+        readConnectionStatus(state);
+    }
+}
+
+
+
+void WiFiManager::setupPropertyChangedSignal()
+{
+    bool connected = QDBusConnection::systemBus().connect(
+        "org.freedesktop.NetworkManager",      // Servizio
+        m_wifiDevicePath,                      // Percorso dell'oggetto (Dispositivo WiFi)
+        "org.freedesktop.DBus.Properties",     // Interfaccia generica per le propriet�
+        "PropertiesChanged",                   // Nome del segnale
+        this, SLOT(onPropertiesChanged(QString, QVariantMap, QStringList))  // Slot da chiamare
+        );
+    if (connected) {
+        qDebug() << "Successfully connected to PropertiesChanged signal";
+    } else {
+        qDebug() << "Failed to connect to PropertiesChanged signal";
+    }
+}
+
+void WiFiManager::readConnectionStatus(uint state)
+{
+    WiFiManager::ConnectionStatus status;
+    switch (state) {
+    case NM_DEVICE_STATE_DISCONNECTED:
+        qDebug() << "Device is disconnected.";
+        status = Disconnected;
+        break;
+    case NM_DEVICE_STATE_ACTIVATED:
+        qDebug() << "Device is connected.";
+        status = Connected;
+        getConnectedSSID();
+        break;
+    case NM_DEVICE_STATE_PREPARE:
+        qDebug() << "Il dispositivo si sta preparando per la connessione";
+        status = Connecting;
+        break;
+    case NM_DEVICE_STATE_CONFIG:
+    case NM_DEVICE_STATE_IP_CONFIG:
+    case NM_DEVICE_STATE_IP_CHECK:
+    case NM_DEVICE_STATE_SECONDARIES:
+        qDebug() << "Il dispositivo è in fase di configurazione della connessione";
+        status = Connecting;
+        break;
+    case NM_DEVICE_STATE_NEED_AUTH:
+        qDebug() << "La connessione richiede autenticazione";
+        status = WrongPassword;
+        break;
+    case NM_DEVICE_STATE_FAILED:
+        qDebug() << "La connessione è fallita";
+        status = ConnectionFailed;
+        break;
+    case NM_DEVICE_STATE_DEACTIVATING:
+        qDebug() << "Il dispositivo si sta preparando per la disconnessione";
+        status = StatusUnknown;
+        break;
+    case NM_DEVICE_STATE_UNKNOWN:
+    case NM_DEVICE_STATE_UNMANAGED:
+    case NM_DEVICE_STATE_UNAVAILABLE:
+    default:
+        qDebug() << "Device is in state:" << state;
+        status = StatusUnknown;
+        break;
+    }
+
+    setConnectionStatus(status);
+}
+
+void WiFiManager::setConnectionStatus(ConnectionStatus status) {
+    if (m_connectionStatus != status) {
+        m_connectionStatus = status;
+        emit wifiStatusChanged(m_connectionStatus);  // Notifica il cambiamento
+    }
+}
+
+void WiFiManager::getConnectedSSID()
+{
+    // Ottieni le connessioni attive da NetworkManager
+    QDBusInterface nmIface("org.freedesktop.NetworkManager",
+                           "/org/freedesktop/NetworkManager",
+                           "org.freedesktop.NetworkManager",
+                           QDBusConnection::systemBus());
+
+    QVariant activeConnectionsVariant = nmIface.property("ActiveConnections");
+
+
+     QList<QDBusObjectPath> activeConnections = qdbus_cast<QList<QDBusObjectPath>>(activeConnectionsVariant);
+     if (!activeConnections.isEmpty()) {
+        for (const QDBusObjectPath &connectionPath : activeConnections) {
+            // Crea un'interfaccia per ogni connessione attiva
+            QDBusInterface activeConnIface("org.freedesktop.NetworkManager",
+                                           connectionPath.path(),
+                                           "org.freedesktop.NetworkManager.Connection.Active",
+                                           QDBusConnection::systemBus());
+
+            // Verifica se la connessione � associata al dispositivo WiFi
+            QVariant devicePathVariant = activeConnIface.property("Devices");
+            if (devicePathVariant.isValid()) {
+                QList<QDBusObjectPath> devices = qdbus_cast<QList<QDBusObjectPath>>(devicePathVariant);
+                if (devices.contains(QDBusObjectPath(m_wifiDevicePath))) {
+                    // Trova l'access point associato
+                    QVariant apPathVariant = activeConnIface.property("SpecificObject");
+                    qDebug() << "apPathVariant:" << apPathVariant;
+                    if (apPathVariant.isValid()) {
+                        QDBusObjectPath apPath = qdbus_cast<QDBusObjectPath>(apPathVariant);
+                        QString apPathString  = apPath.path();
+                        // Crea un'interfaccia per l'access point
+                        QDBusInterface apIface("org.freedesktop.NetworkManager",
+                                               apPathString,
+                                               "org.freedesktop.NetworkManager.AccessPoint",
+                                               QDBusConnection::systemBus());
+
+                        // Ottieni l'SSID
+                        QVariant ssidVariant = apIface.property("Ssid");
+                        if (ssidVariant.isValid()) {
+                            QByteArray ssidArray = ssidVariant.toByteArray();
+                            QString ssid = QString::fromUtf8(ssidArray);
+                            qDebug() << "Connected SSID:" << ssid;
+                        } else {
+                            qDebug() << "Failed to get SSID from access point:" << apIface.lastError().message();
+                        }
+                    }
                 }
             }
         }
-        qDebug() << "Reti trovate:" << savedNetworks;
-        this->scanForSavedNetworks = false;
-        emit savedNetworksChanged("Ricerca finita");
-
-
     } else {
-        qDebug() << "Ricerca fallita";
-        qDebug() << "Errore connessione: " << this->savedNetworksProcess.readAllStandardError();
-        savedNetworks.clear();
-        emit savedNetworksChanged("Ricerca fallita");
-
-    }
-    startScanNetworks();
-}
-
-
-// Funzione per verificare se � connesso
-bool WiFiManager::isConnected() {
-    QProcess isConnectedProcess;
-    QString program = "nmcli";
-    QStringList arguments;
-    arguments << "-t" << "-f" << "DEVICE,STATE" << "dev" << "status";
-    isConnectedProcess.start(program, arguments);
-    isConnectedProcess.waitForFinished();
-    QString output = isConnectedProcess.readAllStandardOutput().trimmed();
-    QString errorOutput = isConnectedProcess.readAllStandardError().trimmed();
-    qDebug() << "Stato connessione:" << output;
-    if (!errorOutput.isEmpty()) {
-        qDebug() << "Errore comando nmcli:" << errorOutput;
-    }
-
-    // Verifica se l'output � "connected"
-    // Cerca se wlan0 � nello stato "connected"
-    QStringList lines = output.split("\n");
-    for (const QString &line : lines) {
-        if (line.startsWith("wlan0:")) {
-            QString state = line.section(":", 1, 1).trimmed();
-            return state == "connected";
-        }
-    }
-
-    return false;  // Se wlan0 non � connesso
-}
-
-
-// Funzione per ottenere l'SSID della rete a cui siamo connessi
-QString WiFiManager::getConnectedSSID() {
-    QProcess ssidProcess;
-    QString program = "nmcli";
-    QStringList arguments;
-    arguments << "-t" << "-f" << "ACTIVE,SSID" << "dev" << "wifi";
-    ssidProcess.start(program, arguments);
-    ssidProcess.waitForFinished();
-    QString output = ssidProcess.readAllStandardOutput().trimmed();
-
-    // Filtra l'output per trovare la rete attiva
-    QStringList lines = output.split("\n");
-    for (const QString &line : lines) {
-        if (line.startsWith("yes:")) {
-            return line.section(":", 1, 1).trimmed();
-        }
-    }
-
-    return "Nessuna rete";  // Se non si trova una rete attiva
-}
-
-// Funzione per disconnettersi dalla rete
-void WiFiManager::disconnectNetwork() {
-    QProcess disconnectProcess;
-    QString program = "sudo";
-    QStringList arguments;
-    arguments << "nmcli" << "dev" << "disconnect" << "wlan0";
-
-    disconnectProcess.start(program, arguments);
-    disconnectProcess.waitForFinished();
-    if (disconnectProcess.exitCode() == 0) {
-        qDebug() << "Disconnesso dalla rete WiFi";
-        emitConnectionStatus(WiFiManager::Disconnected);
-    } else {
-        qDebug() << "Errore durante la disconnessione:" << disconnectProcess.readAllStandardError();
-        emitConnectionStatus(WiFiManager::ErrorDisconnection);
-    }
-}
-
-
-
-WiFiManager::~WiFiManager() {
-    qDebug() << "DIstruttore";
-    if (scanProcess.state() == QProcess::Running) {
-        scanProcess.kill();  // Termina il processo se � ancora in esecuzione
-        scanProcess.waitForFinished();  // Attendi la terminazione
+      qDebug() << "activeConnections empty";
     }
 }

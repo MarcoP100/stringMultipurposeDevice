@@ -2,7 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QDebug>
 #include <QProcess>
-#include "wifimanager.h"
+#include "wifimanager_h"
 #include <QQmlContext>
 
 

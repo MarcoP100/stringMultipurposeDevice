@@ -1,97 +1,80 @@
 #ifndef WIFIMANAGER_H
 #define WIFIMANAGER_H
 
+
 #include <QObject>
-#include <QStringList>
-#include <QProcess>
-#include <QTimer>  // Aggiungi l'inclusione del timer
-#include <QList>
+#include <QtDBus/QtDBus>
+#include <QtDBus/QDBusConnection>
+
 
 class WiFiManager : public QObject
 {
     Q_OBJECT
+
     Q_PROPERTY(bool busy READ isBusy NOTIFY busyChanged)
-    // Q_PROPERTY(bool isConnected READ isConnected NOTIFY connectionStatusChanged)
+    Q_PROPERTY(ConnectionStatus wifiStatus READ statusConnection NOTIFY wifiStatusChanged)
 
 public:
-    explicit WiFiManager(QObject *parent = nullptr);
-
-    Q_INVOKABLE void scanNetworks();
-    Q_INVOKABLE void stopNetworkScan();       // Funzione per fermare la ricerca delle reti
-    Q_INVOKABLE void connectToNetwork(const QString &ssid, const QString &password);
-    Q_INVOKABLE bool isConnected();
-    Q_INVOKABLE QString getConnectedSSID();
-
-    // Aggiungi la funzione per disconnettersi
-    Q_INVOKABLE void disconnectNetwork();
-
-    bool isBusy() const;
-
-    ~WiFiManager();
-
     enum ConnectionStatus {
-        ErrorProcessStart,
-        Timeout,
         Connecting,
         Connected,
         WrongPassword,
         ConnectionFailed,
-        SsidEmpty,
         Disconnected,
-        ErrorDisconnection
+        StatusUnknown,
+        Disconnecting
     };
     Q_ENUM(ConnectionStatus)
+
+    explicit WiFiManager(QObject *parent = nullptr);
+
+
+
+
+    Q_INVOKABLE void scanNetworks();
+    Q_INVOKABLE void connectToNetwork(const QString &ssid, const QString &password);
+    Q_INVOKABLE void disconnectNetwork();
+    //Q_INVOKABLE QString getConnectedSSID();
+    Q_INVOKABLE QStringList getSavedNetworks();
+
+    bool isBusy() const;
+    ConnectionStatus statusConnection() const;
+
 
 
 
 signals:
-    void availableNetworksChanged(const QVariantList &networks);
+
+    void scanCompleted(const QStringList &networks);
+    void connected();
+    void disconnected();
+    void errorOccurred(const QString &error);
     void busyChanged(bool busy);
-    void connectionStatusChanged(WiFiManager::ConnectionStatus status);
-    void savedNetworksChanged(const QString &status);
+    void wifiStatusChanged(ConnectionStatus status);
+
 
 private slots:
-    void handleProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);  // Slot per gestire la fine del processo
-    void handleConnectionFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void handleSavedNetworksFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void handleReadyRead();
-
-    void handleConnectionTimeout();
-    void handleSavedNetworksTimeout();
+    void onPropertiesChanged(QString interfaceName, QVariantMap changedProperties, QStringList invalidatedProperties);
 
 private:
-    struct NetworkInfo {
-        QString ssid;
-        bool requiresPassword;
-        bool isSaved;
-    };
+    void handleNetworkScanResult(const QList<QDBusObjectPath> &networks);
+    void listNetworkDevices();
+    void requestScan();
+    void getAccessPoints();
+    void checkCurrentConnectionStatus();
+    void setupPropertyChangedSignal();
+    void readConnectionStatus(uint state);
+    void setConnectionStatus(ConnectionStatus status);
+    void getConnectedSSID();
+    ConnectionStatus m_connectionStatus = StatusUnknown;
 
-    void emitConnectionStatus(ConnectionStatus status);
-    void startScanNetworks();
-    void getSavedNetworks();
-    void runIwlistCommand();
-    QList<NetworkInfo> parseNetworks(const QString &iwlistOutput);
-    QProcess scanProcess;  // Oggetto QProcess per gestire la ricerca delle reti
-    QProcess connectProcess;
-    QProcess savedNetworksProcess;
-    bool connectionKilled;
-    bool isNetworkSaved(const QString &ssid);
-    bool scanForSavedNetworks = true;
-
-    //QTimer timeoutTimer;  // Timer per il timeout del processo
-    //void onTimeout();
+    QString m_wifiDevicePath;
 
     bool m_busy;  // Flag per indicare se la scansione � in corso
     void setBusy(bool busy);
-    QVariantMap toVariantMap(const NetworkInfo &network);
-    QStringList savedNetworks;
-    const int CONNECT_TIMEOUT_MS = 30000;
+    bool scanForSavedNetworks = true;
 
-    QTimer connectionTimer;
-    QTimer scanNetworksTimer;
-    QTimer knownNetworksTimer;
-
-
+    typedef QMap<QString, QVariantMap> Connection;
 };
 
 #endif // WIFIMANAGER_H
