@@ -3,8 +3,10 @@
 
 
 WiFiManager::WiFiManager(QObject *parent)
-    : QObject{parent}
+    : QObject{parent}, m_busy(false)
 {
+    qDebug() << "WiFiManager constructor called - busy is initially set to:" << m_busy;
+
     // Connessione al bus di sistema
     QDBusConnection bus = QDBusConnection::systemBus();
     if (!bus.isConnected()) {
@@ -18,12 +20,20 @@ WiFiManager::WiFiManager(QObject *parent)
 
 }
 
+QObject* WiFiManager::createSingletonInstance(QQmlEngine*, QJSEngine*) {
+    return new WiFiManager();
+}
+
 
 void WiFiManager::setBusy(bool busy)
 {
     if (m_busy != busy) {
+        qDebug() << "WiFiManager setBusy called - changing busy from" << m_busy << "to" << busy;
+
         m_busy = busy;
         emit busyChanged(m_busy);
+    } else {
+        qDebug() << "WiFiManager setBusy called - busy already" << m_busy << ", no change";
     }
 }
 
@@ -46,7 +56,7 @@ void WiFiManager::scanNetworks()
         getSavedNetworks();
 
     }
-    //requestScan();
+    requestScan();
 }
 
 void WiFiManager::requestScan()
@@ -109,7 +119,6 @@ void WiFiManager::getAccessPoints()
         emit errorOccurred("Failed to get access points");
     }
 
-    setBusy(false);
 }
 
 
@@ -139,6 +148,8 @@ void WiFiManager::handleNetworkScanResult(const QList<QDBusObjectPath> &networks
     }
     qDebug() << "Reti trovate:" << networkList;
     emit scanCompleted(networkList);
+    setBusy(false);
+
 }
 
 

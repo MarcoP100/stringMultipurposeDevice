@@ -25,19 +25,27 @@ qt_add_executable(appStringMultipurposeDevice
 qt_add_qml_module(appStringMultipurposeDevice
     URI StringMultipurposeDevice
     VERSION 1.0
-    QML_FILES main.qml
-    QML_FILES CanLoggerPage.qml
-    QML_FILES MainPage.qml
-    QML_FILES SwipeButtonArea.qml
-    QML_FILES DynamometerOverCan.qml
-    SOURCES wifimanager_h wifimanager_cpp
-    RESOURCES resources/resources.qrc
-    QML_FILES colors.js
-    SOURCES tcpclient.h tcpclient.cpp
-    SOURCES wifimanager.h wifimanager.cpp
-    QML_FILES wifiScanDialog.qml
-    QML_FILES NetworkList.qml
-    QML_FILES DynamometerOverCan_copy.qml
+    QML_FILES
+        main.qml
+        QML/Pages/CanLoggerPage.qml
+        QML/Pages/MainPage.qml
+        QML/Components/SwipeButtonArea.qml
+        QML/Pages/DynamometerOverCan.qml
+        QML/Dialogs/WifiScanDialog.qml
+        QML/Components/NetworkList.qml
+        QML/Pages/DynamometerOverCan_copy.qml
+        QML/Components/WiFiNetworkItem.qml
+        QML/colors.js
+    SOURCES
+        wifimanager_h
+        wifimanager_cpp
+        tcpclient.h
+        tcpclient.cpp
+        wifimanager.h
+        wifimanager.cpp
+    RESOURCES
+        resources/resources.qrc
+        QML_FILES QML/networkUtils.js
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

@@ -8,5 +8,7 @@
         <file>key_on.svg</file>
         <file>wifi_connecting.svg</file>
         <file>wifi_off_bk.svg</file>
+        <file>refresh.svg</file>
+        <file>refresh_gy_30.svg</file>
     </qresource>
 </RCC>

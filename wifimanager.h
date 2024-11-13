@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QtDBus/QtDBus>
 #include <QtDBus/QDBusConnection>
+#include <QQmlEngine>
+#include <QJSEngine>
 
 
 class WiFiManager : public QObject
@@ -27,7 +29,7 @@ public:
     Q_ENUM(ConnectionStatus)
 
     explicit WiFiManager(QObject *parent = nullptr);
-
+    static QObject* createSingletonInstance(QQmlEngine* engine, QJSEngine* scriptEngine);
 
 
 
@@ -70,7 +72,7 @@ private:
 
     QString m_wifiDevicePath;
 
-    bool m_busy;  // Flag per indicare se la scansione � in corso
+    bool m_busy = false;  // Flag per indicare se la scansione � in corso
     void setBusy(bool busy);
     bool scanForSavedNetworks = true;
 

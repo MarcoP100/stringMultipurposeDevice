@@ -5,6 +5,7 @@ import QtQuick.VirtualKeyboard
 import QtQuick.VirtualKeyboard.Settings
 import com.wifiManager 1.0
 import "colors.js" as Colors
+import "../Components" as MyComponents
 
 Item {
     id: dynaOnCanPage
@@ -25,7 +26,7 @@ Item {
     property bool wifiVisible: false
 
 
-    SwipeButtonArea {
+    MyComponents.SwipeButtonArea {
         target: dynaOnCanPage  // Passiamo il riferimento del pulsante
         flickRef: flickableRef  // Passiamo il riferimento del Flickable
     }

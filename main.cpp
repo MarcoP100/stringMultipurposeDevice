@@ -2,7 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QDebug>
 #include <QProcess>
-#include "wifimanager_h"
+#include "wifimanager.h"
 #include <QQmlContext>
 
 
@@ -19,13 +19,14 @@ int main(int argc, char *argv[])
     qDebug() << "Using QPA platform:" << qgetenv("QT_QPA_PLATFORM");
 
     QQmlApplicationEngine engine;
-    WiFiManager wifiManager;
+
+    qmlRegisterSingletonType<WiFiManager>("com.wifiManager", 1, 0, "WiFiManager", WiFiManager::createSingletonInstance);
 
     // Registrazione del tipo per esporre l'enum a QML
-    qmlRegisterType<WiFiManager>("com.wifiManager", 1, 0, "WiFiManager");
+    //qmlRegisterType<WiFiManager>("com.wifiManager", 1, 0, "WiFiManager");
 
      // Setta il context property per avere accesso a wifiManager come istanza
-     engine.rootContext()->setContextProperty("wifiManager", &wifiManager);
+     //engine.rootContext()->setContextProperty("wifiManager", &wifiManager);
 
 
     const QUrl url(QStringLiteral("qrc:/StringMultipurposeDevice/main.qml"));

@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import "../Components" as MyComponents
 
 Item {
     id: canLoggerPage
@@ -9,7 +10,7 @@ Item {
 
     property Flickable flickableRef
     
-    SwipeButtonArea {
+    MyComponents.SwipeButtonArea {
         target: canLoggerPage  // Passiamo il riferimento del pulsante
         flickRef: flickableRef  // Passiamo il riferimento del Flickable
     }
@@ -36,7 +37,7 @@ Item {
                     checkable: true
                     Layout.preferredWidth: 100
                     Layout.preferredHeight: 75
-                    SwipeButtonArea {
+                    MyComponents.SwipeButtonArea {
                         target: can0Button  // Passiamo il riferimento del pulsante
                         flickRef: flickableRef  // Passiamo il riferimento del Flickable
                     }
@@ -49,7 +50,7 @@ Item {
                     checkable: true
                     Layout.preferredWidth: 100
                     Layout.preferredHeight: 75
-                    SwipeButtonArea {
+                    MyComponents.SwipeButtonArea {
                         target: can1Button  // Passiamo il riferimento del pulsante
                         flickRef: flickableRef  // Passiamo il riferimento del Flickable
                     }
@@ -70,7 +71,7 @@ Item {
 
 
                     // SwipeButtonArea riutilizzabile
-                    SwipeButtonArea {
+                    MyComponents.SwipeButtonArea {
                         target: startButton  // Passiamo il riferimento del pulsante
                         flickRef: flickableRef  // Passiamo il riferimento del Flickable
                     }
@@ -90,7 +91,7 @@ Item {
                     Layout.preferredWidth: 200
                     Layout.preferredHeight: 100
                     // SwipeButtonArea riutilizzabile
-                    SwipeButtonArea {
+                    MyComponents.SwipeButtonArea {
                         target: stopButton  // Passiamo il riferimento del pulsante
                         flickRef: flickableRef  // Passiamo il riferimento del Flickable
                     }
@@ -113,7 +114,7 @@ Item {
                     Layout.preferredWidth: 100
                     Layout.preferredHeight: 100
                     // SwipeButtonArea riutilizzabile
-                    SwipeButtonArea {
+                    MyComponents.SwipeButtonArea {
                         target: saveButton  // Passiamo il riferimento del pulsante
                         flickRef: flickableRef  // Passiamo il riferimento del Flickable
                     }
@@ -128,7 +129,7 @@ Item {
                     text: "Elimina"
                     Layout.preferredWidth: 100
                     Layout.preferredHeight: 100
-                    SwipeButtonArea {
+                    MyComponents.SwipeButtonArea {
                         target: deleteButton  // Passiamo il riferimento del pulsante
                         flickRef: flickableRef  // Passiamo il riferimento del Flickable
                     }
@@ -154,7 +155,7 @@ Item {
                 checkable: true
                 Layout.preferredWidth: 500
                 Layout.preferredHeight: 30
-                SwipeButtonArea {
+                MyComponents.SwipeButtonArea {
                     target: candumpButton  // Passiamo il riferimento del pulsante
                     flickRef: flickableRef  // Passiamo il riferimento del Flickable
                 }
@@ -178,7 +179,7 @@ Item {
                     wrapMode: Text.NoWrap
                     text: "Candump Output\n"
                     padding: 10  // Margine interno per dare un po' di spazio al testo
-                    SwipeButtonArea {
+                    MyComponents.SwipeButtonArea {
                         target: candumpArea  // Passiamo il riferimento del pulsante
                         flickRef: flickableRef  // Passiamo il riferimento del Flickable
                     }
