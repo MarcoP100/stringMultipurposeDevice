@@ -4,8 +4,9 @@ import QtQuick.Controls 2.15
 Item {
     id: wifiNetworkItem
     property int wifiItemHeight: 40
+    property int wifiItemWidth: 40
 
-    width: parent.width
+    width: wifiItemWidth
     height: wifiItemHeight
 
     signal networkSelected(string ssid, bool requiresPassword, bool networkKnown)
@@ -26,37 +27,42 @@ Item {
         border.color: "#cccccc"
         border.width: 1
 
-        Text {
-            id: netSsid
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            text: ssid
-        }
+        Item {
+                id: container
+                anchors.fill: parent  // Usa un contenitore per gli elementi
 
-        Image {
-            id: netLock
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: 10
-            source: requiresPassword ? "qrc:/wifiLock.svg" : "qrc:/wifiUnLock.svg"
-            visible: true
-        }
+            Text {
+                id: netSsid
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                text: ssid
+            }
 
-        Image {
-            id: netKnown
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: netLock.left
-            anchors.rightMargin: 10
-            source: networkKnown ? "qrc:/key_on.svg" : "qrc:/key_no.svg"
-            visible: requiresPassword
-        }
+            Image {
+                id: netLock
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                anchors.rightMargin: 10
+                source: requiresPassword ? "qrc:/wifiLock.svg" : "qrc:/wifiUnLock.svg"
+                visible: true
+            }
 
-        MouseArea {
-            id: wifiSelectedArea
-            anchors.fill: parent
-            onClicked: {
-                networkSelected(ssid, requiresPassword, networkKnown)
+            Image {
+                id: netKnown
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: netLock.left
+                anchors.rightMargin: 10
+                source: networkKnown ? "qrc:/key_on.svg" : "qrc:/key_no.svg"
+                visible: requiresPassword
+            }
+
+            MouseArea {
+                id: wifiSelectedArea
+                anchors.fill: parent
+                onClicked: {
+                    networkSelected(ssid, requiresPassword, networkKnown)
+                }
             }
         }
     }

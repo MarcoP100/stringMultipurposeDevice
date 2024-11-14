@@ -8,12 +8,13 @@ Flickable {
     property var listModel
     property int maxVisibleItems
     property bool listVisible
+    property int flickableAreaWidth
 
     property alias listViewContentHeight: listView.contentHeight;
 
     signal networkSelected(string ssid, bool requiresPassword, bool networkKnown)
 
-    width: parent.width
+    width: flickableAreaWidth
     height: Math.min(listViewContentHeight, maxVisibleItems * 40) // Altezza dinamica o massimo consentito
     contentHeight: listViewContentHeight
     clip: true  // Limita il contenuto visibile all'altezza dell'elemento
@@ -34,6 +35,8 @@ Flickable {
         clip: true
         delegate: WiFiNetworkItem {
 
+            wifiItemWidth: listView.width
+            wifiItemHeight: 40
             ssid: model.ssid
             requiresPassword: model.requiresPassword
             networkKnown: model.networkKnown

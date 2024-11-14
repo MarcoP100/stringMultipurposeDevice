@@ -26,7 +26,7 @@ qt_add_qml_module(appStringMultipurposeDevice
     URI StringMultipurposeDevice
     VERSION 1.0
     QML_FILES
-        main.qml
+        QML/main.qml
         QML/Pages/CanLoggerPage.qml
         QML/Pages/MainPage.qml
         QML/Components/SwipeButtonArea.qml
@@ -46,6 +46,9 @@ qt_add_qml_module(appStringMultipurposeDevice
     RESOURCES
         resources/resources.qrc
         QML_FILES QML/networkUtils.js
+        QML_FILES QML/Components/WiFiStatusBar.qml
+        QML_FILES QML/Components/WiFiStatusIcon.qml
+
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

@@ -14,9 +14,18 @@ WiFiManager::WiFiManager(QObject *parent)
         return;
     }
 
+    m_scanTimeoutTimer = new QTimer(this);
+    m_scanTimeoutTimer->setSingleShot(true); // Timer che scatta una volta sola
+     qDebug() << "inizializzazione m_scan";
+    // Configura il timer per gestire il timeout della scansione
+    connect(m_scanTimeoutTimer, &QTimer::timeout, this, &WiFiManager::onScanTimeout);
+     qDebug() << "Connect per m_scanTimeoutTimer fatto.";
+
     listNetworkDevices();
     checkCurrentConnectionStatus();
     setupPropertyChangedSignal();
+
+
 
 }
 
@@ -43,6 +52,16 @@ bool WiFiManager::isBusy() const
     return m_busy;
 }
 
+
+QVariantMap WiFiManager::toVariantMap(const NetworkInfo &network) {
+    QVariantMap networkInfo;
+    networkInfo["ssid"] = network.ssid;
+    networkInfo["requiresPassword"] = network.requiresPassword;
+    networkInfo["networkKnown"] = network.isSaved;
+    return networkInfo;
+}
+
+
 WiFiManager::ConnectionStatus WiFiManager::statusConnection() const
 {
     return m_connectionStatus;
@@ -51,9 +70,15 @@ WiFiManager::ConnectionStatus WiFiManager::statusConnection() const
 
 void WiFiManager::scanNetworks()
 {
+    if (m_busy) {
+        qDebug() << "Scansione gi� in corso";
+        return;
+    }
+
     setBusy(true);
+
     if (scanForSavedNetworks){
-        getSavedNetworks();
+        m_savedNetworks = getSavedNetworks();
 
     }
     requestScan();
@@ -66,18 +91,84 @@ void WiFiManager::requestScan()
                          "org.freedesktop.NetworkManager.Device.Wireless",
                          QDBusConnection::systemBus());
 
-    // Richiedi una scansione delle reti disponibili
-
+    if (!iface.isValid()) {
+        qWarning() << "Interfaccia D-Bus non valida per avviare la scansione";
+        setBusy(false);
+        return;
+    }
     QVariantMap options;
-    QDBusMessage response = iface.call("RequestScan", QVariant::fromValue(options));
+    QDBusPendingReply<void> reply = iface.asyncCall("RequestScan", QVariant::fromValue(options));
+    // Richiedi una scansione delle reti disponibili
+    //QVariantMap options;
+    //QDBusMessage response = iface.call("RequestScan", QVariant::fromValue(options));
 
-    if (!response.errorMessage().isEmpty()) {
+    /*if (!response.errorMessage().isEmpty()) {
         qDebug() << "Failed to initiate network scan:" << response.errorMessage();
     } else {
         qDebug() << "Network scan command sent successfully.";
     }
-    qDebug() << "Request scan";
+    qDebug() << "Request scan";*/
 
+    if (reply.isError()) {
+        qWarning() << "Errore durante la richiesta di scansione:" << reply.error().message();
+        setBusy(false);
+        return;
+    }
+    qDebug() << "Scansione avviata (asincrona).";
+
+    // Avvia il timer per il timeout della scansione (ad esempio 10 secondi)
+    m_scanTimeoutTimer->start(10000);
+
+    // Utilizza QDBusPendingCallWatcher per monitorare quando la chiamata � terminata
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, &WiFiManager::onScanFinished);
+
+
+    // Forza una chiamata a `getAccessPoints()` dopo un breve ritardo
+    //QTimer::singleShot(30000, this, &WiFiManager::getAccessPoints);
+
+}
+
+void WiFiManager::onScanTimeout() {
+    qWarning() << "Timeout della scansione WiFi raggiunto. La scansione non � stata completata in tempo.";
+
+    // Interrompi lo stato di scansione
+    setBusy(false);
+
+    // Qui puoi gestire la UI per informare l'utente che la scansione non � andata a buon fine
+    emit scanCompleted(QVariantList()); // Emetti una lista vuota per indicare che non sono state trovate reti
+}
+
+
+
+// Slot che viene chiamato quando la scansione � terminata
+void WiFiManager::onScanFinished(QDBusPendingCallWatcher *watcher) {
+
+    // Ferma il timer poich� la scansione � completata
+    if (m_scanTimeoutTimer->isActive()) {
+        m_scanTimeoutTimer->stop();
+    }
+
+    qDebug() << "onScanFinished chiamato. Risposta da D-Bus:" << watcher->isFinished();
+
+    qDebug() << "Scansione completata.";
+
+    // Gestisci l'eventuale errore
+    QDBusPendingReply<void> reply = *watcher;
+    if (reply.isError()) {
+        qWarning() << "Errore durante la scansione WiFi:" << reply.error().message();
+        setBusy(false);
+        watcher->deleteLater();
+        return;
+    }
+
+    // Una volta completata, chiama getAccessPoints per ottenere le reti trovate
+    getAccessPoints();
+
+    // Termina la gestione dello stato di scansione
+    setBusy(false);
+
+    watcher->deleteLater();
 }
 
 
@@ -85,21 +176,31 @@ void WiFiManager::onPropertiesChanged(QString interfaceName, QVariantMap changed
 {
     //qDebug() << "PropertiesChanged signal received for interface:" << interfaceName;
     // Verifica se l'interfaccia � quella giusta
-    if (interfaceName == "org.freedesktop.NetworkManager.Device.Wireless") {
+    /*if (interfaceName == "org.freedesktop.NetworkManager.Device.Wireless") {
         //qDebug() << "Property changed: " << changedProperties;
         // Controlla se la propriet� "AccessPoints" � tra quelle modificate
         if (changedProperties.contains("AccessPoints")) {
             qDebug() << "Access points property changed, getting updated list of networks.";
             // Chiama GetAccessPoints per ottenere l'elenco delle reti aggiornato
             getAccessPoints();
+
+            // Reset del timer per aspettare ulteriori cambiamenti
+            if (!m_scanCompletionTimer) {
+                m_scanCompletionTimer = new QTimer(this);
+                connect(m_scanCompletionTimer, &QTimer::timeout, this, &WiFiManager::onScanTimeout);
+                m_scanCompletionTimer->setSingleShot(true);
+            }
+            m_scanCompletionTimer->start(3000);  // Aspetta 3 secondi dopo l'ultimo cambiamento
         }
-    }else if (interfaceName == "org.freedesktop.NetworkManager.Device"){
+    }else */if (interfaceName == "org.freedesktop.NetworkManager.Device"){
         if (changedProperties.contains("State")) {
             uint newState = changedProperties.value("State").toUInt();
             readConnectionStatus(newState);
         }
     }
 }
+
+
 
 void WiFiManager::getAccessPoints()
 {
@@ -109,7 +210,7 @@ void WiFiManager::getAccessPoints()
                          "org.freedesktop.NetworkManager.Device.Wireless",
                          QDBusConnection::systemBus());
 
-    QDBusReply<QList<QDBusObjectPath>> apReply = iface.call("GetAccessPoints");
+    QDBusReply<QList<QDBusObjectPath>> apReply = iface.call("GetAllAccessPoints");
     if (apReply.isValid()) {
         QList<QDBusObjectPath> accessPoints = apReply.value();
         // Stampa l'elenco completo dei percorsi degli access points
@@ -117,6 +218,7 @@ void WiFiManager::getAccessPoints()
         handleNetworkScanResult(accessPoints);
     } else {
         emit errorOccurred("Failed to get access points");
+        setBusy(false);
     }
 
 }
@@ -125,7 +227,7 @@ void WiFiManager::getAccessPoints()
 
 void WiFiManager::handleNetworkScanResult(const QList<QDBusObjectPath> &networks)
 {
-    QStringList networkList;
+    QList<NetworkInfo> networkList;
     qDebug() << "Handle";
     for (const QDBusObjectPath &networkPath : networks) {
         QDBusInterface apIface("org.freedesktop.NetworkManager",
@@ -134,22 +236,45 @@ void WiFiManager::handleNetworkScanResult(const QList<QDBusObjectPath> &networks
                                QDBusConnection::systemBus());
 
         QVariant ssidReply = apIface.property("Ssid");
+        QVariant wpaFlagsReply = apIface.property("Flags");
+
         if (ssidReply.isValid() && !ssidReply.isNull()) {
             QString ssid = ssidReply.toString();
-            if (!networkList.contains(ssid)) {
-                qDebug() << "Found SSID:" << ssid;
-                networkList.append(ssid);
+
+            if (!ssid.isEmpty()) {
+                NetworkInfo networkInfo;
+                networkInfo.ssid = ssid;
+                networkInfo.requiresPassword = wpaFlagsReply.isValid() && wpaFlagsReply.toInt() != 0;  // Se WpaFlags > 0, la rete � protetta
+                networkInfo.isSaved = isNetworkKnown(ssid);
+
+                if (!networkList.contains(networkInfo)) {
+                    qDebug() << "Found SSID:" << ssid << "Protected:" << networkInfo.requiresPassword << "- Saved: " << networkInfo.isSaved;
+                    networkList.append(networkInfo);
+
+                } else {
+                    qDebug() << "Duplicate SSID found, ignoring:" << ssid;
+                }
             } else {
-                qDebug() << "Duplicate SSID found, ignoring:" << ssid;
+                qDebug() << "Empty SSID for access point:" << networkPath.path();
             }
         } else {
             qDebug() << "Failed to get SSID for access point:" << networkPath.path();
         }
     }
-    qDebug() << "Reti trovate:" << networkList;
-    emit scanCompleted(networkList);
-    setBusy(false);
+    qDebug() << "Reti trovate:" << networkList.size();
 
+    QVariantList variantNetworks;
+    for (const NetworkInfo &network : networkList) {
+        variantNetworks.append(toVariantMap(network));
+    }
+
+    emit scanCompleted(variantNetworks);
+    //setBusy(false);
+
+}
+
+bool WiFiManager::isNetworkKnown(const QString &ssid) {
+    return m_savedNetworks.contains(ssid);
 }
 
 
@@ -382,8 +507,8 @@ void WiFiManager::getConnectedSSID()
     QVariant activeConnectionsVariant = nmIface.property("ActiveConnections");
 
 
-     QList<QDBusObjectPath> activeConnections = qdbus_cast<QList<QDBusObjectPath>>(activeConnectionsVariant);
-     if (!activeConnections.isEmpty()) {
+    QList<QDBusObjectPath> activeConnections = qdbus_cast<QList<QDBusObjectPath>>(activeConnectionsVariant);
+    if (!activeConnections.isEmpty()) {
         for (const QDBusObjectPath &connectionPath : activeConnections) {
             // Crea un'interfaccia per ogni connessione attiva
             QDBusInterface activeConnIface("org.freedesktop.NetworkManager",
@@ -422,6 +547,6 @@ void WiFiManager::getConnectedSSID()
             }
         }
     } else {
-      qDebug() << "activeConnections empty";
+        qDebug() << "activeConnections empty";
     }
 }

@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
      //engine.rootContext()->setContextProperty("wifiManager", &wifiManager);
 
 
-    const QUrl url(QStringLiteral("qrc:/StringMultipurposeDevice/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/StringMultipurposeDevice/QML/main.qml"));
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreated,

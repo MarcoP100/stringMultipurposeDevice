@@ -45,7 +45,7 @@ ApplicationWindow {
 
             Loader {
                 id: mainPageLoader
-                source: "QML/Pages/MainPage.qml"  // Carica il file MainPage.qml
+                source: "Pages/MainPage.qml"  // Carica il file MainPage.qml
                 //anchors.fill: parent
                 width: 800
                 height: parent.height
@@ -60,7 +60,7 @@ ApplicationWindow {
 
             Loader {
                 id: canLoggerPageLoader
-                source: "QML/Pages/CanLoggerPage.qml"  // Carica il file MainPage.qml
+                source: "Pages/CanLoggerPage.qml"  // Carica il file MainPage.qml
                 //anchors.fill: parent
                 width: 800
                 height: parent.height
@@ -75,7 +75,7 @@ ApplicationWindow {
 
             Loader {
                 id: dynaOnCanPageLoader
-                source: "QML/Pages/DynamometerOverCan.qml"  // Carica il file MainPage.qml
+                source: "Pages/DynamometerOverCan.qml"  // Carica il file MainPage.qml
                 //anchors.fill: parent
                 width: 800
                 height: parent.height

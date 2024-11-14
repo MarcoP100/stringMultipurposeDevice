@@ -25,11 +25,21 @@ Item {
         }
     }
 
+    Connections {
+        target: WiFiManager
+        function onScanCompleted(networks) {
+
+            for (var i = 0; i < networks.length; i++) {
+                console.log("SSID:", networks[i].ssid, "Richiede password:", networks[i].requiresPassword, "Salvata:", networks[i].networkKnown);
+            }
+            NetUtils.updateNetworkList(networks, wifiListModel);
+
+        }
+    }
+
+
     ListModel {
         id: wifiListModel
-        ListElement { ssid: "Network 1"; requiresPassword: true; networkKnown: false }
-        ListElement { ssid: "Network 2"; requiresPassword: false; networkKnown: true }
-        ListElement { ssid: "Network 3"; requiresPassword: true; networkKnown: true }
     }
 
 
@@ -39,8 +49,11 @@ Item {
         maxVisibleItems: 5
         wifiManagerBusy: WiFiManager.busy
         wifiListModel: wifiListModel
+        visible: false
 
     }
+
+
 
 }
 
