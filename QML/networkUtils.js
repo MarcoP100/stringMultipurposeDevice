@@ -51,3 +51,33 @@ function updateNetworkList(networks, wifiListModel) {
         }
     }
 }
+
+
+function isNetworkSelected(selectedNetwork) {
+    if (selectedNetwork.ssid === "")
+        return false;  // Supponiamo per ora che ogni rete ne abbia bisogno
+    else
+        return true;
+}
+
+
+function checkPasswordLock(selectedNetwork) {
+    if (selectedNetwork.lock) {
+        if (selectedNetwork.isSaved) {
+            console.log("Password conosciuta");
+            return {
+                shouldConnect: true,
+                };
+        } else {
+            console.log("Password necessaria");
+            return {
+                shouldConnect: false
+            };
+        }
+    } else {
+        console.log("Connessione senza password");
+        return {
+            shouldConnect: true,
+        };
+    }
+}

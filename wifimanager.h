@@ -15,6 +15,7 @@ class WiFiManager : public QObject
 
     Q_PROPERTY(bool busy READ isBusy NOTIFY busyChanged)
     Q_PROPERTY(ConnectionStatus wifiStatus READ statusConnection NOTIFY wifiStatusChanged)
+    //Q_PROPERTY(QString currentNetworkSsid READ getCurrentNetworkName NOTIFY ssidChanged)
 
 public:
     enum ConnectionStatus {
@@ -28,6 +29,16 @@ public:
     };
     Q_ENUM(ConnectionStatus)
 
+    struct NetworkEntry {
+        QString ssid;
+        QString id;
+        QString path;
+
+        // Dichiarazione dell'operatore come amico
+        friend QDebug operator<<(QDebug dbg, const NetworkEntry &entry);
+
+    };
+
     explicit WiFiManager(QObject *parent = nullptr);
     static QObject* createSingletonInstance(QQmlEngine* engine, QJSEngine* scriptEngine);
 
@@ -36,12 +47,13 @@ public:
     Q_INVOKABLE void scanNetworks();
     Q_INVOKABLE void connectToNetwork(const QString &ssid, const QString &password);
     Q_INVOKABLE void disconnectNetwork();
+    Q_INVOKABLE void checkCurrentConnectionStatus();
     //Q_INVOKABLE QString getConnectedSSID();
-    Q_INVOKABLE QStringList getSavedNetworks();
+
 
     bool isBusy() const;
     ConnectionStatus statusConnection() const;
-
+    QString getCurrentNetworkName() const;
 
 
 
@@ -53,6 +65,7 @@ signals:
     void errorOccurred(const QString &error);
     void busyChanged(bool busy);
     void wifiStatusChanged(ConnectionStatus status);
+    void ssidChanged(const QString &ssid);
 
 
 private slots:
@@ -74,21 +87,27 @@ private:
         }
     };
 
+
+    QList<NetworkEntry> m_savedNetworks;
+    QList<NetworkEntry> getSavedNetworks();
+
     QVariantMap toVariantMap(const NetworkInfo &network);
     void handleNetworkScanResult(const QList<QDBusObjectPath> &networks);
     void listNetworkDevices();
     void requestScan();
     bool isNetworkKnown(const QString &ssid);
     void getAccessPoints();
-    void checkCurrentConnectionStatus();
+
     void setupPropertyChangedSignal();
     void readConnectionStatus(uint state);
     void setConnectionStatus(ConnectionStatus status);
-    void getConnectedSSID();
+    QString getConnectedSSID();
+    void setCurrentNetworkName(const QString &ssid);
+
     ConnectionStatus m_connectionStatus = StatusUnknown;
 
     QString m_wifiDevicePath;
-    QStringList m_savedNetworks;
+
     bool m_scanCompletionTimer ;
 
 
@@ -99,6 +118,12 @@ private:
     typedef QMap<QString, QVariantMap> Connection;
 
      QTimer *m_scanTimeoutTimer = nullptr; // Timer per gestire il timeout della scansione
+    QString m_connectedSsid = "";
+
+    //connection
+    void connectNoPassword(const QString &ssid, const QString &apPath);
+    void connectWithPassword(const QString &ssid, const QString &password, const QString &apPath);
+    NetworkEntry dataNetworkKnown(const QString &ssid);
 
 
 };

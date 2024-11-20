@@ -1,31 +1,37 @@
 import QtQuick 2.15
 import "../Components" as MyComponents
 import "../networkUtils.js" as NetUtils
+import "../colors.js" as Colors
 
 Item {
     // Indicatore di stato (LED)
     id: wifiIconItem
 
     signal longPressed()
+    signal ssidClicked()
+    property int circleRadius: 20
+    property string networkText: "Selezionare rete"
+    property string circleBorderColor: Colors.DARK_GREY_COLOR
+    property string iconStatusImg: "qrc:/wifi_off.svg"
+    property alias iconState: wifiIcon.state
 
 
     Rectangle {
         id: wifiIcon
-        width: 40
-        height: 40
-        radius: 20
+        width: circleRadius * 2
+        height: circleRadius * 2
+        radius: circleRadius
         color: "lightblue"
         border.color: "black" // Colore del bordo
         border.width: 1  // Spessore del bordo
-        z: 20
+
         anchors {
 
-            left: dynaOnCanPage.left
-            top: dynaOnCanPage.top
-            leftMargin: 10
-            topMargin: 10
+            left: parent.left
+            top: parent.top
 
         }
+
         state: ""
         // Animazione per trasformare l'icona in pulsante
         states: [
@@ -33,9 +39,10 @@ Item {
                 name: "expanded"
                 PropertyChanges {
                     target: wifiIcon
-                    width: (40 + networkName.width + 30) // Calcola la larghezza massima
-                    height: 40
-                    radius: height / 2
+                    width: ((circleRadius * 2) + networkName.width + (circleRadius * 2) - 10) // Calcola la larghezza massima
+                    height: circleRadius * 2
+                    radius: circleRadius
+                    anchors.left: parent.left // Mantieni il wifiIcon ancorato a sinistra
                 }
                 PropertyChanges {
                     target: networkName
@@ -70,51 +77,52 @@ Item {
 
         MyComponents.WiFiStatusIcon{
             id: wifiStatusIcon
-            anchors.centerIn: parent
+            anchors.left: parent.left // Assicura che sia ancorato a sinistra
+            anchors.verticalCenter: parent.verticalCenter // Mantieni la posizione verticale centrata
             wifiStatusColor: "white"
-            borderColor: Colors.DARK_GREY_COLOR
-            iconSource: "qrc:/wifi_off_bk.svg"
-            z: 20
-            circleRadius: 20
+            borderColor: circleBorderColor
+            iconSource: iconStatusImg
+            z: parent.z + 1
+            circleRadius: circleRadius
             visible: true
 
-            onSingleClicked{
+            onSingleClicked: {
 
                 wifiIcon.state = wifiIcon.state === "" ? "expanded" : ""
 
             }
 
-            onLongPressed{
+            onLongPressed: {
                 wifiIconItem.longPressed();
             }
 
-            }
+        }
 
+        // Nome della rete WiFi, che appare solo quando espanso
+        Text {
+            id: networkName
+            text: networkText
+            anchors.verticalCenter: wifiIcon.verticalCenter
+            anchors.left: wifiStatusIcon.right
+            anchors.leftMargin: 10 // Margine tra l'icona e il testo
+            width: Math.min(implicitWidth, 500) // Limita la larghezza al massimo a 200 oppure alla larghezza del rettangolo - margine
+            elide: Text.ElideRight // Troncamento con "..." se il testo supera la larghezza
+            opacity: wifiIcon.state === "expanded" ? 1.0 : 0.0 // Inizia invisibile
+            color: "black"
+        }
 
-                // Nome della rete WiFi, che appare solo quando espanso
-                Text {
-                    id: networkName
-                    text: "Selezionare rete"
-                    anchors.verticalCenter: wifiIcon.verticalCenter
-                    anchors.left: wifiStatusCircle.right
-                    anchors.leftMargin: 10 // Margine tra l'icona e il testo
-                    width: Math.min(implicitWidth, 500) // Limita la larghezza al massimo a 200 oppure alla larghezza del rettangolo - margine
-                    elide: Text.ElideRight // Troncamento con "..." se il testo supera la larghezza
-                    opacity: wifiIcon.state === "expanded" ? 1.0 : 0.0 // Inizia invisibile
-                    color: "black"
+        MouseArea {
+            id: networkMouseArea
+            anchors.fill: parent // Copre l'intero schermo
+            visible: true
+            onClicked: {
+                if (wifiIcon.state === "expanded") {
+                    ssidClicked(); // Emetti il segnale solo quando � espanso
                 }
-
-                MouseArea {
-                    id: networkMouseArea
-                    anchors.fill: parent // Copre l'intero schermo
-                    visible: wifiIcon.state === "expanded"// Visibile solo quando il dialogo � aperto
-                    onClicked: {
-                        networkDialog.visible = true;
-                        startNetworkScan();
-                    }
-
-                }
-
             }
 
         }
+
+    }
+
+}

@@ -1,28 +1,28 @@
 import QtQuick 2.15
 import "../colors.js" as Colors
 
-Item {
-
-    id: wifiStatusIconItem
-
-    signal singleClicked()
-    signal longPressed()
-
-    // Propriet� configurabili dall'esterno
-    property color wifiStatusColor: "white"
-    property color borderColor: Colors.DARK_GREY_COLOR
-    property string iconSource: "qrc:/wifi_off_bk.svg"
-    property int circleRadius: 20
-
     Rectangle {
+
         id: wifiStatusCircle
+
+        signal singleClicked()
+        signal longPressed()
+
+        // Propriet� configurabili dall'esterno
+        property color wifiStatusColor: "white"
+        property color borderColor: Colors.DARK_GREY_COLOR
+        property string iconSource: "qrc:/wifi_off_bk.svg"
+        property int circleRadius: 20
+
+
         width: circleRadius * 2
         height: circleRadius * 2
         radius: circleRadius
         color: wifiStatusColor
         border.color: borderColor    // Colore del bordo
         border.width: 1  // Spessore del bordo
-        anchors.centerIn: wifiStatusIconItem
+        anchors.left: parent.left // Assicura che sia ancorato a sinistra
+        anchors.verticalCenter: parent.verticalCenter // Centra verticalmente
 
         Image {
             id: wifiStatusIcon
@@ -38,13 +38,13 @@ Item {
             onClicked: {
 
                 console.log("Icona cliccata brevemente");
-                wifiStatusIconItem.singleClicked();  // Emissione del segnale `clicked`
+                wifiStatusCircle.singleClicked();  // Emissione del segnale `clicked`
 
             }
 
             onPressAndHold:{
                 console.log("Icona premuta a lungo");
-                wifiStatusIconItem.longPressed();  // Emissione del segnale `longPressed`
+                wifiStatusCircle.longPressed();  // Emissione del segnale `longPressed`
             }
 
             Timer {
@@ -64,4 +64,4 @@ Item {
             }
         }
     }
-}
+

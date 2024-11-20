@@ -8,6 +8,12 @@ Item {
 
     id: wifiScanDialog
 
+    width: parent.width
+    height: parent.height
+
+    signal mouseAreaClicked()
+    signal networkSelected(string ssid, bool requiresPassword, bool networkKnown)
+
     property bool wifiManagerBusy: false
     property var wifiListModel
     property int maxVisibleItems: 1
@@ -26,7 +32,6 @@ Item {
         anchors.centerIn: parent
         border.color: "black"
         border.width: 1
-        z: 10  // Porta il dialogo in primo piano
 
         /*onVisibleChanged: {
             if (!networkDialog.visible) {
@@ -60,13 +65,7 @@ Item {
 
                 onNetworkSelected: function(selectedSsid, selectedRequiresPassword, selectedNetworkKnown) {
                     console.log("Rete selezionata:", selectedSsid);
-                    /*selectedNetwork = {
-                            "ssid": selectedSsid,
-                            "lock": selectedRequiresPassword,
-                            "isSaved": selectedNetworkKnown
-                        };
-                        networkName.text = selectedNetwork.ssid;*/
-                    // Add more logic like password check here
+                    wifiScanDialog.networkSelected(selectedSsid, selectedRequiresPassword, selectedNetworkKnown);
                 }
             }
         }
@@ -85,15 +84,35 @@ Item {
             anchors.topMargin: 10
             visible: networkDialog.visible
             enabled: !wifiManagerBusy
-            z: 10
             contentItem: Image {
-                    source: wifiManagerBusy ? "qrc:/refresh_gy_30.svg" :  "qrc:/refresh.svg"
-                    anchors.centerIn: parent
-                }
+                source: wifiManagerBusy ? "qrc:/refresh_gy_30.svg" :  "qrc:/refresh.svg"
+                anchors.centerIn: parent
+            }
 
             onClicked: {
                 updateList();
             }
+
+        }
+    }
+
+    Rectangle {
+        id: overlay
+        anchors.fill: parent
+        color: "black"
+        opacity: 0.7  // Regola l'opacit� per ottenere l'effetto di oscuramento
+        z: (networkDialog.z - 1)
+
+        MouseArea {
+            id: dialogBackgroundArea
+            anchors.fill: parent // Copre l'intero schermo
+            onClicked: {
+
+                    wifiScanDialog.mouseAreaClicked();
+
+            }
+
+
 
         }
     }

@@ -48,6 +48,7 @@ qt_add_qml_module(appStringMultipurposeDevice
         QML_FILES QML/networkUtils.js
         QML_FILES QML/Components/WiFiStatusBar.qml
         QML_FILES QML/Components/WiFiStatusIcon.qml
+        QML_FILES QML/Dialogs/PasswordDialog.qml
 
 )
 
