@@ -455,7 +455,7 @@ void WiFiManager::connectToNetwork(const QString &ssid, const QString &password)
 
     // verifico se connettere con paswword o senza
     if (password == ""){
-       connectNoPassword(ssid, apPath);
+        connectNoPassword(ssid, apPath);
     } else {
         ;//connectWithPassword(ssid, password, apPath);
     }
@@ -501,8 +501,19 @@ void WiFiManager::connectNoPassword(const QString &ssid, const QString &apPath){
 
 void WiFiManager::disconnectNetwork()
 {
-    // Disattivare la connessione con `DeactivateConnection`
-    // ...
+
+    QString connectionPathString = getConnectedNetworkPath().connectionPath;
+    qDebug() << "Inizio disattivazione: " << connectionPathString;
+    QDBusInterface nmInterface(
+        "org.freedesktop.NetworkManager",
+        "/org/freedesktop/NetworkManager",
+        "org.freedesktop.NetworkManager",
+        QDBusConnection::systemBus()
+        );
+
+    nmInterface.call("DeactivateConnection", QDBusObjectPath(connectionPathString));
+    qDebug() << "Richiesta disattivazione:" << connectionPathString;
+
 }
 
 
@@ -745,9 +756,15 @@ void WiFiManager::setConnectionStatus(ConnectionStatus status) {
 
 
 
-QString WiFiManager::getConnectedSSID()
-{
-    QString ssid = "";
+
+
+
+WiFiManager::NetworkPaths WiFiManager::getConnectedNetworkPath(){
+
+    NetworkPaths paths;
+    paths.apPath = "";
+    paths.connectionPath = "";
+
     // Ottieni le connessioni attive da NetworkManager
     QDBusInterface nmIface("org.freedesktop.NetworkManager",
                            "/org/freedesktop/NetworkManager",
@@ -776,28 +793,42 @@ QString WiFiManager::getConnectedSSID()
                     qDebug() << "apPathVariant:" << apPathVariant;
                     if (apPathVariant.isValid()) {
                         QDBusObjectPath apPath = qdbus_cast<QDBusObjectPath>(apPathVariant);
-                        QString apPathString  = apPath.path();
-                        // Crea un'interfaccia per l'access point
-                        QDBusInterface apIface("org.freedesktop.NetworkManager",
-                                               apPathString,
-                                               "org.freedesktop.NetworkManager.AccessPoint",
-                                               QDBusConnection::systemBus());
+                        paths.apPath = apPath.path();
+                        paths.connectionPath = connectionPath.path();
+                        return paths;  // Esci dopo aver trovato il Wi-Fi attivo
 
-                        // Ottieni l'SSID
-                        QVariant ssidVariant = apIface.property("Ssid");
-                        if (ssidVariant.isValid()) {
-                            QByteArray ssidArray = ssidVariant.toByteArray();
-                            ssid = QString::fromUtf8(ssidArray);
-                            qDebug() << "Connected SSID:" << ssid;
-                        } else {
-                            qDebug() << "Failed to get SSID from access point:" << apIface.lastError().message();
-                        }
                     }
                 }
             }
         }
     } else {
         qDebug() << "activeConnections empty";
+    }
+    return paths;
+}
+
+
+QString WiFiManager::getConnectedSSID()
+{
+    QString ssid = "";
+    QString apPathString = getConnectedNetworkPath().apPath;
+
+    if (apPathString != ""){
+        // Crea un'interfaccia per l'access point
+        QDBusInterface apIface("org.freedesktop.NetworkManager",
+                               apPathString,
+                               "org.freedesktop.NetworkManager.AccessPoint",
+                               QDBusConnection::systemBus());
+
+        // Ottieni l'SSID
+        QVariant ssidVariant = apIface.property("Ssid");
+        if (ssidVariant.isValid()) {
+            QByteArray ssidArray = ssidVariant.toByteArray();
+            ssid = QString::fromUtf8(ssidArray);
+            qDebug() << "Connected SSID:" << ssid;
+        } else {
+            qDebug() << "Failed to get SSID from access point:" << apIface.lastError().message();
+        }
     }
     return ssid;
 }

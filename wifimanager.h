@@ -60,8 +60,6 @@ public:
 signals:
 
     void scanCompleted(const QVariantList &networks);
-    void connected();
-    void disconnected();
     void errorOccurred(const QString &error);
     void busyChanged(bool busy);
     void wifiStatusChanged(ConnectionStatus status);
@@ -87,6 +85,11 @@ private:
         }
     };
 
+    struct NetworkPaths {
+        QString apPath;
+        QString connectionPath;
+    };
+
 
     QList<NetworkEntry> m_savedNetworks;
     QList<NetworkEntry> getSavedNetworks();
@@ -102,6 +105,7 @@ private:
     void readConnectionStatus(uint state);
     void setConnectionStatus(ConnectionStatus status);
     QString getConnectedSSID();
+    NetworkPaths getConnectedNetworkPath();
     void setCurrentNetworkName(const QString &ssid);
 
     ConnectionStatus m_connectionStatus = StatusUnknown;
@@ -117,7 +121,7 @@ private:
 
     typedef QMap<QString, QVariantMap> Connection;
 
-     QTimer *m_scanTimeoutTimer = nullptr; // Timer per gestire il timeout della scansione
+    QTimer *m_scanTimeoutTimer = nullptr; // Timer per gestire il timeout della scansione
     QString m_connectedSsid = "";
 
     //connection

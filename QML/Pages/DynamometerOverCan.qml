@@ -153,13 +153,30 @@ Item {
 
         onLongPressed: {
             console.log("Pressione lunga icona wifi");
+            switch (wifiStatusColor) {
+            case Colors.RED_COLOR:
+            case Colors.DARK_GREY_COLOR:
+            case Colors.YELLOW_COLOR:
+                break;
+
+            case Colors.GREEN_COLOR:
+
+                if (WiFiManager) {
+                    WiFiManager.disconnectNetwork();
+                }
+                break;
+
+            default:
+                console.log("Stato non riconosciuto");
+                break;
+            }
         }
 
         onSsidClicked: {
             console.log("Pressione mouse area wifi");
             //if (wifiStatusColor !== Colors.GREEN_COLOR){
-                wifiScanDialog.visible = true;
-                NetUtils.startNetworkScan();
+            wifiScanDialog.visible = true;
+            NetUtils.startNetworkScan();
             //}
 
         }
