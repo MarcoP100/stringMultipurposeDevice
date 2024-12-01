@@ -9,8 +9,10 @@ Item {
     property int keyboard_height: 0
 
     property bool isPasswordVisible: false
+    property bool savePassword: false
+    property string ssid: ""
 
-    signal confirmClicked(string password)
+    signal confirmClicked(string password, bool passwordToSaved)
 
     visible: false
     width: parent.width
@@ -20,14 +22,14 @@ Item {
         id: passwordRct
 
         width: 300
-        height: 175
+        height: 220
         color: "white"
         radius: 5
         border.color: "black"
         border.width: 1
 
         z: passwordDialog.z
-        y: keyboard_active ? (parent.height - keyboard_height - height - 10) : (parent.height - height) / 2
+        y: keyboard_active ? (parent.height - keyboard_height - height - 5) : (parent.height - height) / 2
         anchors.horizontalCenter: parent.horizontalCenter
 
 
@@ -38,6 +40,11 @@ Item {
             easing.type: Easing.InOutQuad
         }
     }*/
+        // MouseArea che intercetta i clic
+            MouseArea {
+                anchors.fill: parent
+
+            }
 
 
         Column {
@@ -51,7 +58,7 @@ Item {
 
 
             Text {
-                text: "Inserisci Password"
+                text: ssid
                 anchors.topMargin: 10
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pixelSize: 16
@@ -85,6 +92,17 @@ Item {
                 onClicked: isPasswordVisible = !isPasswordVisible;
             }
 
+            CheckBox {
+                id: savePasswordCheckBox
+                text: "Memorizza Password"
+                focusPolicy: Qt.NoFocus
+                font.pixelSize: 16
+                anchors.topMargin: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+                checked: savePassword
+                onClicked: savePassword = !savePassword;
+            }
+
 
             Button {
                 text: "Conferma"
@@ -94,12 +112,12 @@ Item {
                     passwordDialog.visible = false;
 
                     console.log("Password salvata")
-                    passwordDialog.confirmClicked(passwordField.text);
+                    passwordDialog.confirmClicked(passwordField.text, savePassword);
 
                     passwordField.focus = false;
                     passwordField.text = "";
                     isPasswordVisible = false;
-
+                    savePassword = false;
                 }
 
             }
@@ -114,13 +132,12 @@ Item {
         anchors.fill: parent
         color: "black"
         opacity: 0.7  // Regola l'opacit� per ottenere l'effetto di oscuramento
-        z: (passwordDialog.z - 1)
+        z: (passwordDialog.z - 5)
 
         MouseArea {
             id: dialogBackgroundArea
             anchors.fill: parent // Copre l'intero schermo
             onClicked: {
-
                 if (keyboard_active){
                     console.log("Chiusura tastiera")
                     passwordField.focus = false;

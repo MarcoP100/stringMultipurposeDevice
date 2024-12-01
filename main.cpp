@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     qmlRegisterSingletonType<WiFiManager>("com.wifiManager", 1, 0, "WiFiManager", WiFiManager::createSingletonInstance);
+    // Registra il tipo per D-Bus
+    WiFiManager::registerDBusTypes();
 
     // Registrazione del tipo per esporre l'enum a QML
     //qmlRegisterType<WiFiManager>("com.wifiManager", 1, 0, "WiFiManager");

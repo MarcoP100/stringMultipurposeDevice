@@ -31,7 +31,7 @@ Item {
     Connections {
         target: wifiScanDialog.updateButton
         function onUpdateList() {
-            console.log("Pulsante cliccato! Gestione dal livello superiore con Connections.");
+            //console.log("Pulsante cliccato! Gestione dal livello superiore con Connections.");
             NetUtils.startNetworkScan();
         }
     }
@@ -48,7 +48,7 @@ Item {
         }
 
         function onSsidChanged(ssid) {
-            console.log("Nome della rete aggiornato:", ssid);
+            //console.log("Nome della rete aggiornato:", ssid);
             if (ssid !== ""){
                 networkName = ssid;
             }
@@ -57,43 +57,48 @@ Item {
 
         function onWifiStatusChanged(status){
 
-            console.log("Status:", status)
+            //console.log("Status:", status)
+            wiFiStatusBar.expandIcon = true;
+            if (!wifiScanDialog.visible){
+               wiFiStatusBar.stopTimerClosure = false;
+            }
+            setProperty(wiFiStatusBar, "restartTimerClosure", true, wiFiStatusBar.stopTimerClosure)
+
             switch (status) {
 
             case WiFiManager.Timeout:
-                console.log("La connessione ha superato il timeout.");
+                //console.log("La connessione ha superato il timeout.");
                 wifiStatusColor = Colors.RED_COLOR
                 wifiIconStatusImg = "qrc:/wifi_off.svg"
                 break;
             case WiFiManager.Connecting:
-                console.log("Connessione in corso...");
+                //console.log("Connessione in corso...");
                 wifiStatusColor = Colors.YELLOW_COLOR
                 wifiIconStatusImg = "qrc:/wifi_connecting.svg"
+                wiFiStatusBar.stopTimerClosure = true;
                 break;
             case WiFiManager.Connected:
-                console.log("Connessione avvenuta con successo.");
+                //console.log("Connessione avvenuta con successo.");
                 wifiStatusColor = Colors.GREEN_COLOR
                 wifiIconStatusImg = "qrc:/wifi_on.svg"
-                wiFiStatusBar.iconState = ""
                 break;
             case WiFiManager.WrongPassword:
-                console.log("Password errata. Riprovare.");
+                //console.log("Password errata. Riprovare.");
                 wifiStatusColor = Colors.RED_COLOR
                 wifiIconStatusImg = "qrc:/wifi_off.svg"
-                passwordDialog.visible = true;
                 break;
             case WiFiManager.ConnectionFailed:
-                console.log("Connessione fallita.");
+                //console.log("Connessione fallita.");
                 wifiStatusColor = Colors.RED_COLOR
                 wifiIconStatusImg = "qrc:/wifi_off.svg"
                 break;
             case WiFiManager.Disconnected:
-                console.log("Disconnesso.");
+                //console.log("Disconnesso.");
                 wifiStatusColor = Colors.DARK_GREY_COLOR
                 wifiIconStatusImg = "qrc:/wifi_off_bk.svg"
                 break;
             case WiFiManager.StatusUnknown:
-                console.log("Stato Sconosciuto.");
+                //console.log("Stato Sconosciuto.");
                 wifiStatusColor = Colors.RED_COLOR
                 wifiIconStatusImg = "qrc:/wifi_off.svg"
                 break;
@@ -106,7 +111,17 @@ Item {
             }
         }
 
+        function onReasonChangeState(newState, reason){
+            //console.log("Nuovo stato:", newState, "Motivo:", reason);
+            if (newState === WiFiManager.NM_DEVICE_STATE_FAILED && reason === WiFiManager.NM_DEVICE_STATE_REASON_NO_SECRETS) {
+                console.log("Apertura popup password");
+                passwordDialog.visible = true;
+            }
+
+        }
     }
+
+
 
 
     /*Connections {
@@ -142,6 +157,7 @@ Item {
         circleRadius : 20
         networkText: networkName === "" ? "Selezionare rete" : networkName
 
+
         anchors {
 
             left: parent.left
@@ -152,7 +168,7 @@ Item {
         }
 
         onLongPressed: {
-            console.log("Pressione lunga icona wifi");
+            //console.log("Pressione lunga icona wifi");
             switch (wifiStatusColor) {
             case Colors.RED_COLOR:
             case Colors.DARK_GREY_COLOR:
@@ -181,6 +197,11 @@ Item {
 
         }
 
+        onIconClicked: {
+            setProperty(wiFiStatusBar, "expandIcon", !wiFiStatusBar.expandIcon, wiFiStatusBar.stopTimerClosure)
+            setProperty(wiFiStatusBar, "restartTimerClosure", true, wiFiStatusBar.stopTimerClosure)
+        }
+
     }
 
 
@@ -195,29 +216,40 @@ Item {
 
         onMouseAreaClicked:{
             wifiScanDialog.visible = false;
-            passwordDialog.visible = true
+
         }
 
         onNetworkSelected:function(selectedSsid, selectedRequiresPassword, selectedNetworkKnown){
 
-            console.log("Rete selezionata:", selectedSsid);
+            //console.log("Rete selezionata:", selectedSsid);
             // Gestione della selezione della rete
             selectedNetwork = {
                 "ssid": selectedSsid,
                 "lock": selectedRequiresPassword,
                 "isSaved": selectedNetworkKnown
             };
-            networkName = selectedNetwork.ssid;
+            //networkName = selectedNetwork.ssid;
             wifiScanDialog.visible = false;  // Chiudi il dialogo dopo la selezione
             let result = NetUtils.checkPasswordLock(selectedNetwork);
             if (result.shouldConnect) {
                 if (WiFiManager) {
-                    WiFiManager.connectToNetwork(selectedNetwork.ssid, "");
+                    WiFiManager.connectToNetwork(selectedNetwork.ssid, "", false);
                 }
             } else {
                 passwordDialog.visible = true;
+                passwordDialog.ssid = selectedNetwork.ssid;
             }
 
+        }
+        
+        onVisibleChanged: {
+            if (visible){
+                wiFiStatusBar.stopTimerClosure = true
+            }else{
+                wiFiStatusBar.stopTimerClosure = false
+                setProperty(wiFiStatusBar, "restartTimerClosure", true, wiFiStatusBar.stopTimerClosure)
+                console.log("Scan chiuso, restart timer");
+            }
         }
 
 
@@ -228,10 +260,18 @@ Item {
         id: passwordDialog
         keyboard_active: keyboard.active
         keyboard_height: keyboard.height
+        ssid: selectedNetwork.ssid
         z: 10
 
-        onConfirmClicked:{
-            ;
+        onConfirmClicked:function(password, savePassword){
+
+            if (WiFiManager) {
+                WiFiManager.connectToNetwork(selectedNetwork.ssid, password, savePassword);
+            }
+        }
+        onVisibleChanged:{
+            if (visible)
+                wifiScanDialog.visible = false;
         }
     }
 
@@ -244,6 +284,20 @@ Item {
         width: parent.width
         anchors.bottom: parent.bottom
 
+    }
+    
+    // funzioni
+    function setProperty(object, propertyName, value, lock) {
+        if (lock) {
+            console.log("Modifica non consentita: propriet� bloccata!");
+            return;
+        }
+        if (object && propertyName in object) {
+                object[propertyName] = value;  // Modifica dinamica della propriet�
+                //console.log(propertyName, "modificata a:", value, lock);
+            } else {
+                console.log("Errore: la propriet�", propertyName, "non esiste nell'oggetto.");
+            }
     }
 }
 

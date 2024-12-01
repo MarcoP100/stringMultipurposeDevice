@@ -37,8 +37,8 @@ qt_add_qml_module(appStringMultipurposeDevice
         QML/Components/WiFiNetworkItem.qml
         QML/colors.js
     SOURCES
-        wifimanager_h
-        wifimanager_cpp
+
+
         tcpclient.h
         tcpclient.cpp
         wifimanager.h

@@ -21,9 +21,19 @@ WiFiManager::WiFiManager(QObject *parent)
     connect(m_scanTimeoutTimer, &QTimer::timeout, this, &WiFiManager::onScanTimeout);
     qDebug() << "Connect per m_scanTimeoutTimer fatto.";
 
+
+    //timer per scan network
+    m_emitDelayTimer = new QTimer(this);
+    m_emitDelayTimer->setInterval(5000);  // 5 secondi di ritardo
+    m_emitDelayTimer->setSingleShot(true);  // Timer a colpo singolo
+
+    connect(m_emitDelayTimer, &QTimer::timeout, this, &WiFiManager::onScanFinished);
+
+
     listNetworkDevices();
     //checkCurrentConnectionStatus();
     setupPropertyChangedSignal();
+    setupStatusChangedSignal();
 
 
 
@@ -77,10 +87,10 @@ void WiFiManager::scanNetworks()
 
     setBusy(true);
 
-    if (scanForSavedNetworks){
+    //if (scanForSavedNetworks){
         m_savedNetworks = getSavedNetworks();
 
-    }
+    //}
     requestScan();
 }
 
@@ -121,7 +131,7 @@ void WiFiManager::requestScan()
 
     // Utilizza QDBusPendingCallWatcher per monitorare quando la chiamata � terminata
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
-    connect(watcher, &QDBusPendingCallWatcher::finished, this, &WiFiManager::onScanFinished);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, &WiFiManager::onNetworkFound);
 
 
     // Forza una chiamata a `getAccessPoints()` dopo un breve ritardo
@@ -142,7 +152,7 @@ void WiFiManager::onScanTimeout() {
 
 
 // Slot che viene chiamato quando la scansione � terminata
-void WiFiManager::onScanFinished(QDBusPendingCallWatcher *watcher) {
+void WiFiManager::onNetworkFound(QDBusPendingCallWatcher *watcher) {
 
     // Ferma il timer poich� la scansione � completata
     if (m_scanTimeoutTimer->isActive()) {
@@ -151,7 +161,7 @@ void WiFiManager::onScanFinished(QDBusPendingCallWatcher *watcher) {
 
     qDebug() << "onScanFinished chiamato. Risposta da D-Bus:" << watcher->isFinished();
 
-    qDebug() << "Scansione completata.";
+
 
     // Gestisci l'eventuale errore
     QDBusPendingReply<void> reply = *watcher;
@@ -162,19 +172,22 @@ void WiFiManager::onScanFinished(QDBusPendingCallWatcher *watcher) {
         return;
     }
 
-    // Una volta completata, chiama getAccessPoints per ottenere le reti trovate
-    getAccessPoints();
-
-    // Termina la gestione dello stato di scansione
-    setBusy(false);
+    // Riavvia il timer per emettere la lista
+    m_emitDelayTimer->start();
 
     watcher->deleteLater();
 }
 
+void WiFiManager::onScanFinished() {
+    qDebug() << "Scansione completata.";
+
+    getAccessPoints();
+
+}
 
 void WiFiManager::onPropertiesChanged(QString interfaceName, QVariantMap changedProperties, QStringList invalidatedProperties)
 {
-    //qDebug() << "PropertiesChanged signal received for interface:" << interfaceName;
+    ;//qDebug() << "PropertiesChanged signal received for interface:" << interfaceName;
     // Verifica se l'interfaccia � quella giusta
     /*if (interfaceName == "org.freedesktop.NetworkManager.Device.Wireless") {
         //qDebug() << "Property changed: " << changedProperties;
@@ -192,12 +205,12 @@ void WiFiManager::onPropertiesChanged(QString interfaceName, QVariantMap changed
             }
             m_scanCompletionTimer->start(3000);  // Aspetta 3 secondi dopo l'ultimo cambiamento
         }
-    }else */if (interfaceName == "org.freedesktop.NetworkManager.Device"){
+    }else if (interfaceName == "org.freedesktop.NetworkManager.Device"){
         if (changedProperties.contains("State")) {
             uint newState = changedProperties.value("State").toUInt();
             readConnectionStatus(newState);
         }
-    }
+    }*/
 }
 
 
@@ -219,7 +232,9 @@ void WiFiManager::getAccessPoints()
     } else {
         emit errorOccurred("Failed to get access points");
         setBusy(false);
+
     }
+
 
 }
 
@@ -269,7 +284,7 @@ void WiFiManager::handleNetworkScanResult(const QList<QDBusObjectPath> &networks
     }
 
     emit scanCompleted(variantNetworks);
-    //setBusy(false);
+    setBusy(false);
 
 }
 
@@ -293,122 +308,19 @@ WiFiManager::NetworkEntry WiFiManager::dataNetworkKnown(const QString &ssid) {
     return selNetwork;
 }
 
-/*
-void WiFiManager::connectToNetwork(const QString &ssid, const QString &password)
+
+
+void WiFiManager::connectToNetwork(const QString &ssid, const QString &password, const bool &savePassword)
 {
+    QString connectedSsid = getConnectedSSID().trimmed();  // Elimina spazi e caratteri non visibili
+    QString sanitizedSsid = ssid.trimmed();               // Elimina spazi e caratteri non visibili
+
     // Verifica se siamo gi� connessi alla rete specificata
-    if (m_connectedSsid == ssid) {
-        qDebug() << "Gi� connesso alla rete:" << m_connectedSsid << " = " << ssid;
+    if (QString::compare(connectedSsid, sanitizedSsid, Qt::CaseInsensitive) == 0) {
+        qDebug() << "Gi� connesso alla rete:" << connectedSsid << " = " << sanitizedSsid;
         return;
-    }
-
-    qDebug() << "Tentativo di connessione alla rete SSID:" << ssid;
-
-    // Ottieni i punti di accesso disponibili per il dispositivo WiFi
-    QDBusInterface wifiDeviceIface("org.freedesktop.NetworkManager",
-                                   m_wifiDevicePath,
-                                   "org.freedesktop.NetworkManager.Device.Wireless",
-                                   QDBusConnection::systemBus());
-
-    QDBusReply<QList<QDBusObjectPath>> accessPointsReply = wifiDeviceIface.call("GetAccessPoints");
-    if (!accessPointsReply.isValid()) {
-        // Stampa un messaggio di errore se non � possibile ottenere i punti di accesso
-        qWarning() << "Impossibile ottenere i punti di accesso:" << accessPointsReply.error().message();
-        return;
-    }
-
-    qDebug() << "Punti di accesso trovati:" << accessPointsReply.value().size();
-
-    // Cerca il punto di accesso che corrisponde all'SSID specificato
-    QString apPath;
-    for (const QDBusObjectPath &ap : accessPointsReply.value()) {
-        QDBusInterface apIface("org.freedesktop.NetworkManager",
-                               ap.path(),
-                               "org.freedesktop.NetworkManager.AccessPoint",
-                               QDBusConnection::systemBus());
-        QString apSsid = apIface.property("Ssid").toString();
-        // Confronta l'SSID del punto di accesso con l'SSID desiderato
-        qDebug() << "Controllando SSID del punto di accesso:" << apSsid;
-        if (apSsid == ssid) {
-            apPath = ap.path();
-            break;
-        }
-    }
-
-    // Se non viene trovato alcun punto di accesso corrispondente, stampa un avviso ed esci
-    if (apPath.isEmpty()) {
-        qWarning() << "Punto di accesso non trovato per SSID:" << ssid;
-        return;
-    }
-
-    qDebug() << "Punto di accesso trovato per SSID:" << ssid;
-
-    // Crea una mappa di configurazione per la connessione WiFi
-    QVariantMap connectionMap;
-    QVariantMap connectionSettings;
-    QVariantMap wifiSetting;
-    QVariantMap securitySetting;
-
-    // Impostazioni generali della connessione
-    connectionSettings.insert("id", ssid); // Nome della connessione
-    connectionSettings.insert("type", "802-11-wireless"); // Tipo di connessione
-    connectionSettings.insert("autoconnect", true); // Connessione automatica
-
-
-    // Se viene fornita una password, configura le impostazioni di sicurezza
-    // if (!password.isEmpty()) {
-    qDebug() << "Impostando la sicurezza WPA-PSK per la rete";
-    securitySetting.insert("key-mgmt", "wpa-psk"); // Imposta la gestione delle chiavi su WPA-PSK
-    securitySetting.insert("psk", password); // Imposta la chiave pre-condivisa (password)
-    // }
-
-    // Aggiungi le impostazioni WiFi alla mappa di configurazione
-    connectionMap.insert("connection", connectionSettings);
-    connectionMap.insert("802-11-wireless", wifiSetting);
-    // Aggiungi le impostazioni di sicurezza alla mappa di configurazione, se definite
-    // securitySetting non creato se rete senza password
-    //if (!securitySetting.isEmpty()) {
-    connectionMap.insert("802-11-wireless-security", securitySetting);
-    //}
-
-    qDebug() << "Configurazione della connessione WiFi creata";
-    qDebug() << connectionMap;
-    // Crea un'interfaccia per interagire con le impostazioni di NetworkManager utilizzando D-Bus
-    QDBusInterface settingsIface("org.freedesktop.NetworkManager",
-                                 "/org/freedesktop/NetworkManager/Settings",
-                                 "org.freedesktop.NetworkManager.Settings",
-                                 QDBusConnection::systemBus());
-
-    // Crea un'interfaccia per attivare la connessione utilizzando D-Bus
-    QDBusInterface nmIfaceActivate("org.freedesktop.NetworkManager",
-                                   "/org/freedesktop/NetworkManager",
-                                   "org.freedesktop.NetworkManager",
-                                   QDBusConnection::systemBus());
-
-    // Aggiungi e attiva la connessione per il dispositivo WiFi e il punto di accesso specificati
-    qDebug() << "Tentativo di aggiungere e attivare la connessione";
-    QDBusReply<QDBusObjectPath> activeConnectionReply = nmIfaceActivate.call(
-        "AddAndActivateConnection",
-        QVariant::fromValue(connectionMap),
-        QVariant::fromValue(m_wifiDevicePath),
-        QVariant::fromValue(apPath));
-
-    // Verifica se la connessione � stata aggiunta e attivata correttamente
-    if (!activeConnectionReply.isValid()) {
-        qWarning() << "Impossibile aggiungere e attivare la connessione:" << activeConnectionReply.error().message();
     } else {
-        qDebug() << "Connesso alla rete:" << ssid;
-    }
-}
-*/
-
-void WiFiManager::connectToNetwork(const QString &ssid, const QString &password)
-{
-
-    // Verifica se siamo gi� connessi alla rete specificata
-    if (m_connectedSsid == ssid) {
-        qDebug() << "Gi� connesso alla rete:" << m_connectedSsid << " = " << ssid;
-        return;
+        qDebug() << "SSID differenti:" << connectedSsid << " != " << sanitizedSsid;
     }
 
     qDebug() << "Tentativo di connessione alla rete SSID:" << ssid;
@@ -452,12 +364,12 @@ void WiFiManager::connectToNetwork(const QString &ssid, const QString &password)
 
     qDebug() << "Punto di accesso trovato per SSID:" << ssid;
 
-
+    setCurrentNetworkName(ssid);
     // verifico se connettere con paswword o senza
     if (password == ""){
         connectNoPassword(ssid, apPath);
     } else {
-        ;//connectWithPassword(ssid, password, apPath);
+        connectWithPassword(ssid, apPath, password, savePassword);
     }
 
 }
@@ -476,13 +388,16 @@ void WiFiManager::connectNoPassword(const QString &ssid, const QString &apPath){
 
     // cerco l'ssid tra i network salvati
     m_savedNetworks = getSavedNetworks();
-    if (isNetworkKnown(ssid)){
+    // Determino il percorso della connessione
+    QString connectionPath = "/";
+    if (isNetworkKnown(ssid)) {
         network = dataNetworkKnown(ssid);
-
+        connectionPath = network.path;  // Usa il percorso salvato per la rete
+    }
 
         QDBusReply<QDBusObjectPath> activeConnectionReply = nmIfaceActivate.call(
             "ActivateConnection",
-            QDBusObjectPath(network.path),
+            QDBusObjectPath(connectionPath),
             QDBusObjectPath(m_wifiDevicePath),
             QDBusObjectPath(apPath));
 
@@ -494,9 +409,93 @@ void WiFiManager::connectNoPassword(const QString &ssid, const QString &apPath){
             m_connectedSsid = ssid;
             //emit connectionSuccessful(ssid);
         }
-    }
+
 
 }
+
+
+void WiFiManager::connectWithPassword(const QString &ssid, const QString &apPath, const QString &password, const bool &savePassword){
+
+    NetworkEntry network = {};
+
+    QVariantMap wirelessSettings;
+    wirelessSettings["ssid"] = ssid.toUtf8();
+    wirelessSettings["mode"] = "infrastructure";
+    qDebug() << "Qmap 1 ottenuto:" << wirelessSettings;
+
+    QVariantMap wirelessSecuritySettings;
+    wirelessSecuritySettings["key-mgmt"] = "wpa-psk";
+    wirelessSecuritySettings["psk"] = password;
+    qDebug() << "Qmap 2 ottenuto:" << wirelessSecuritySettings;
+
+    QVariantMap connectionMap;
+    connectionMap["id"] = ssid;
+    if (savePassword){
+        m_savedNetworks = getSavedNetworks();
+        if (isNetworkKnown(ssid)) {
+            network = dataNetworkKnown(ssid);
+            connectionMap["id"] = network.id;  // Usa il percorso salvato per la rete
+            if (!network.uuid.isEmpty()) {
+                connectionMap["uuid"] = network.uuid;
+            }
+        }
+    }
+
+    connectionMap["type"] = "802-11-wireless";
+    qDebug() << "Qmap 3 ottenuto:" << connectionMap;
+
+    // Crea la configurazione annidata direttamente
+    QMap<QString, QVariantMap> connectionSettings;
+    // Inserisci la sezione "connection" nella mappa principale
+    connectionSettings.insert("connection", connectionMap);
+    // Inserisci la sezione "802-11-wireless" nella mappa principale
+    connectionSettings.insert("802-11-wireless", wirelessSettings);
+    // Inserisci la sezione "802-11-wireless-security" nella mappa principale
+    connectionSettings.insert("802-11-wireless-security", wirelessSecuritySettings);
+
+    // Converte la mappa annidata per il metodo AddAndActivateConnection2
+    QVariant finalConnectionSettings = QVariant::fromValue(connectionSettings);
+
+    qDebug() << "Qmap ottenuto:" << connectionSettings;
+    // Opzioni per una connessione temporanea
+    QVariantMap options;
+    if (savePassword) {  // Controlla lo stato della spunta
+        options["persist"] = "disk";  // Salva la connessione
+       qDebug() << "Password da salvare";
+    } else {
+        options["persist"] = "volatile";  // Connessione temporanea
+    }
+
+
+
+    // Chiamata a AddAndActivateConnection2
+    QDBusInterface nmInterface(
+        "org.freedesktop.NetworkManager",
+        "/org/freedesktop/NetworkManager",
+        "org.freedesktop.NetworkManager",
+        QDBusConnection::systemBus()
+        );
+
+    QDBusMessage reply = nmInterface.call("AddAndActivateConnection2",
+                                          (finalConnectionSettings),  // Connessione
+                                          QDBusObjectPath(m_wifiDevicePath),              // Dispositivo
+                                          QDBusObjectPath(apPath),                     // Specific Object
+                                          QVariant::fromValue(options));            // Opzioni
+
+    if (reply.type() == QDBusMessage::ErrorMessage) {
+        qDebug() << "Errore nella connessione:" << reply.errorMessage();
+    } else {
+        QList<QVariant> arguments = reply.arguments();
+        if (arguments.size() >= 2) {
+            QString activeConnectionPath = arguments[1].value<QDBusObjectPath>().path();
+            qDebug() << "Connessione attiva al path:" << activeConnectionPath;
+        }
+            m_connectedSsid = ssid;
+            //emit connectionSuccessful(ssid);
+        }
+    }
+
+
 
 
 void WiFiManager::disconnectNetwork()
@@ -551,7 +550,6 @@ QList<WiFiManager::NetworkEntry> WiFiManager::getSavedNetworks()
             continue;
         }
 
-
         QVariant argument = message.arguments().first();
         QMap<QString, QVariantMap> settings;
         const QDBusArgument &dbusArg = argument.value<QDBusArgument>();
@@ -576,9 +574,10 @@ QList<WiFiManager::NetworkEntry> WiFiManager::getSavedNetworks()
 
         QVariantMap connectionSettings = settings["connection"];
         QString id = connectionSettings.value("id").toString();
+        QString uuid = connectionSettings.value("uuid").toString();
         QString path = connectionPath.path();
 
-        NetworkEntry entry = { ssid, id, path };
+        NetworkEntry entry = { ssid, id, path, uuid };
 
         if (ssidMap.contains(ssid)) {
             ssidMap[ssid].append(entry); // Duplicato
@@ -690,6 +689,31 @@ void WiFiManager::setupPropertyChangedSignal()
     }
 }
 
+
+void WiFiManager::setupStatusChangedSignal()
+{
+    bool connected = QDBusConnection::systemBus().connect(
+        "org.freedesktop.NetworkManager",      // Servizio
+        m_wifiDevicePath,                      // Percorso dell'oggetto (Dispositivo WiFi)
+        "org.freedesktop.NetworkManager.Device",     // Interfaccia generica per le propriet�
+        "StateChanged",                   // Nome del segnale
+        this, SLOT(onDeviceStateChanged(uint, uint, uint))  // Slot da chiamare
+        );
+    if (connected) {
+        qDebug() << "Successfully connected to StateChanged signal";
+    } else {
+        qDebug() << "Failed to connect to StateChanged signal";
+    }
+}
+
+void WiFiManager::onDeviceStateChanged(uint newState, uint oldState, uint reason) {
+    qDebug() << "Stato cambiato da" << oldState << "a" << newState << "Motivo:" << reason;
+
+    readConnectionStatus(newState);
+    emit reasonChangeState(newState, reason);
+}
+
+
 void WiFiManager::readConnectionStatus(uint state)
 {
     QString ssid;
@@ -727,6 +751,7 @@ void WiFiManager::readConnectionStatus(uint state)
         qDebug() << "La connessione è fallita";
         status = ConnectionFailed;
         ssid = "";
+        checkConnectionFailureReason();
         break;
     case NM_DEVICE_STATE_DEACTIVATING:
         qDebug() << "Il dispositivo si sta preparando per la disconnessione";
@@ -755,6 +780,34 @@ void WiFiManager::setConnectionStatus(ConnectionStatus status) {
 }
 
 
+void WiFiManager::checkConnectionFailureReason() {
+    QDBusInterface deviceInterface(
+        "org.freedesktop.NetworkManager",
+        m_wifiDevicePath,
+        "org.freedesktop.DBus.Properties",
+        QDBusConnection::systemBus()
+        );
+
+    QDBusMessage reply = deviceInterface.call("Get", "org.freedesktop.NetworkManager.Device", "StateReason");
+    qDebug() << "reply:" << reply;
+    if (reply.type() == QDBusMessage::ReplyMessage) {
+        QList<QVariant> arguments = reply.arguments();
+        qDebug() << "arguments:" << arguments;
+        QVariant stateReasonVariant = reply.arguments().first();
+        qDebug() << "stateReasonVariant:" << stateReasonVariant;
+        /*QDBusArgument dbusArg = stateReasonVariant.value<QDBusArgument>();
+            uint state = 0, reason = 0;
+            dbusArg.beginStructure();
+            dbusArg >> state >> reason;
+            dbusArg.endStructure();
+
+            qDebug() << "Stato:" << state << ", Motivo:" << reason;*/
+
+    } else {
+        qDebug() << "Errore nel recuperare StateReason:" << reply.errorMessage();
+    }
+
+}
 
 
 
@@ -849,4 +902,8 @@ QDebug operator<<(QDebug dbg, const WiFiManager::NetworkEntry &entry) {
                   << ", id: " << entry.id
                   << ", path: " << entry.path << "}";
     return dbg.space();
+}
+
+void WiFiManager::registerDBusTypes() {
+    qDBusRegisterMetaType<NestedMap>();
 }

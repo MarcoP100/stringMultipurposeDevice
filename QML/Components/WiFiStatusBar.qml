@@ -9,11 +9,27 @@ Item {
 
     signal longPressed()
     signal ssidClicked()
+    signal iconClicked()
     property int circleRadius: 20
     property string networkText: "Selezionare rete"
     property string circleBorderColor: Colors.DARK_GREY_COLOR
     property string iconStatusImg: "qrc:/wifi_off.svg"
-    property alias iconState: wifiIcon.state
+    property bool restartTimerClosure: false
+    property bool stopTimerClosure: false
+    property bool expandIcon: false
+
+    onRestartTimerClosureChanged: {
+                if (restartTimerClosure) {
+                    console.log("Propriet� diventata true, riavvio il Timer");
+                    hideTimer.restart();  // Riavvia il Timer
+                    restartTimerClosure = false;  // Riporta la propriet� a false
+                }
+            }
+    onStopTimerClosureChanged: {
+        if (stopTimerClosure) {
+            hideTimer.stop();
+        }
+    }
 
 
     Rectangle {
@@ -37,18 +53,23 @@ Item {
         states: [
             State {
                 name: "expanded"
+                when: expandIcon
                 PropertyChanges {
                     target: wifiIcon
                     width: ((circleRadius * 2) + networkName.width + (circleRadius * 2) - 10) // Calcola la larghezza massima
                     height: circleRadius * 2
                     radius: circleRadius
                     anchors.left: parent.left // Mantieni il wifiIcon ancorato a sinistra
+
                 }
                 PropertyChanges {
                     target: networkName
                     opacity: 1.0
                 }
+
             }
+
+
         ]
         transitions: Transition {
             from: ""
@@ -88,8 +109,7 @@ Item {
 
             onSingleClicked: {
 
-                wifiIcon.state = wifiIcon.state === "" ? "expanded" : ""
-
+                wifiIconItem.iconClicked()
             }
 
             onLongPressed: {
@@ -122,6 +142,17 @@ Item {
             }
 
         }
+
+        // Timer per nascondere il nome della rete
+            Timer {
+                id: hideTimer
+                interval: 5000  // Durata in millisecondi (es. 5000 = 5 secondi)
+                repeat: false   // Non ripetere il timer
+                onTriggered: {
+                    wifiIconItem.expandIcon = false;  // Nascondi il nome della rete
+                }
+
+            }
 
     }
 

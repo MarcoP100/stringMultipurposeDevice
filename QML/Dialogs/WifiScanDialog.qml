@@ -17,7 +17,7 @@ Item {
     property bool wifiManagerBusy: false
     property var wifiListModel
     property int maxVisibleItems: 1
-
+   
     // Rende il pulsante `updateButton` accessibile da altri componenti
     property alias updateButton: updateButton
 
