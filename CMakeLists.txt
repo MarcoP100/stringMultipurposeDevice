@@ -33,7 +33,6 @@ qt_add_qml_module(appStringMultipurposeDevice
         QML/Pages/DynamometerOverCan.qml
         QML/Dialogs/WifiScanDialog.qml
         QML/Components/NetworkList.qml
-        QML/Pages/DynamometerOverCan_copy.qml
         QML/Components/WiFiNetworkItem.qml
         QML/colors.js
     SOURCES
@@ -49,6 +48,7 @@ qt_add_qml_module(appStringMultipurposeDevice
         QML_FILES QML/Components/WiFiStatusBar.qml
         QML_FILES QML/Components/WiFiStatusIcon.qml
         QML_FILES QML/Dialogs/PasswordDialog.qml
+        QML_FILES QML/Components/TcpStatusIcon.qml
 
 )
 

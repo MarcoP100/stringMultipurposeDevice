@@ -581,10 +581,10 @@ QList<WiFiManager::NetworkEntry> WiFiManager::getSavedNetworks()
 
         if (ssidMap.contains(ssid)) {
             ssidMap[ssid].append(entry); // Duplicato
-            qDebug() << "SSID duplicato aggiunto alla mappa:" << ssid;
+            //qDebug() << "SSID duplicato aggiunto alla mappa:" << ssid;
         } else {
             ssidMap.insert(ssid, QList<NetworkEntry>{entry});
-            qDebug() << "SSID nuovo aggiunto alla mappa:" << ssid;
+            //qDebug() << "SSID nuovo aggiunto alla mappa:" << ssid;
         }
     }
 
@@ -707,7 +707,7 @@ void WiFiManager::setupStatusChangedSignal()
 }
 
 void WiFiManager::onDeviceStateChanged(uint newState, uint oldState, uint reason) {
-    qDebug() << "Stato cambiato da" << oldState << "a" << newState << "Motivo:" << reason;
+    //qDebug() << "Stato cambiato da" << oldState << "a" << newState << "Motivo:" << reason;
 
     readConnectionStatus(newState);
     emit reasonChangeState(newState, reason);
@@ -789,12 +789,12 @@ void WiFiManager::checkConnectionFailureReason() {
         );
 
     QDBusMessage reply = deviceInterface.call("Get", "org.freedesktop.NetworkManager.Device", "StateReason");
-    qDebug() << "reply:" << reply;
+    //qDebug() << "reply:" << reply;
     if (reply.type() == QDBusMessage::ReplyMessage) {
         QList<QVariant> arguments = reply.arguments();
-        qDebug() << "arguments:" << arguments;
+        //qDebug() << "arguments:" << arguments;
         QVariant stateReasonVariant = reply.arguments().first();
-        qDebug() << "stateReasonVariant:" << stateReasonVariant;
+        //qDebug() << "stateReasonVariant:" << stateReasonVariant;
         /*QDBusArgument dbusArg = stateReasonVariant.value<QDBusArgument>();
             uint state = 0, reason = 0;
             dbusArg.beginStructure();

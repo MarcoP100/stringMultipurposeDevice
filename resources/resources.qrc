@@ -10,5 +10,8 @@
         <file>wifi_off_bk.svg</file>
         <file>refresh.svg</file>
         <file>refresh_gy_30.svg</file>
+        <file>tcp_disable_rd.svg</file>
+        <file>tcp_disable_gy.svg</file>
+        <file>tcp_connected_gn.svg</file>
     </qresource>
 </RCC>

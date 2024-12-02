@@ -4,6 +4,7 @@
 #include <QProcess>
 #include "wifimanager.h"
 #include <QQmlContext>
+#include "tcpclient.h"
 
 
 int main(int argc, char *argv[])
@@ -30,6 +31,8 @@ int main(int argc, char *argv[])
      // Setta il context property per avere accesso a wifiManager come istanza
      //engine.rootContext()->setContextProperty("wifiManager", &wifiManager);
 
+    tcpClient *tcp = new tcpClient();
+    engine.rootContext()->setContextProperty("tcpClient", tcp);
 
     const QUrl url(QStringLiteral("qrc:/StringMultipurposeDevice/QML/main.qml"));
     QObject::connect(
@@ -47,6 +50,12 @@ int main(int argc, char *argv[])
         qWarning() << "Failed to load QML file. Exiting application.";
         return -1;
     }
+
+    // Connetti il segnale aboutToQuit per eliminare tcp
+   /* QObject::connect(&app, &QCoreApplication::aboutToQuit, [&]() {
+        qDebug() << "Chiusura";
+        delete tcp; // Libera la memoria di tcp
+    });*/
 
     return app.exec();
 }

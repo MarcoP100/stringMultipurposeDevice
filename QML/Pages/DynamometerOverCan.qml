@@ -21,6 +21,9 @@ Item {
     property string wifiIconStatusImg: "qrc:/wifi_off_bk.svg"
     property string networkName: "Selezionare rete"
 
+    property string tcpStatusImg: "qrc:/tcp_disable_gy.svg"
+    property string tcpStatusColor: Colors.DARK_GREY_COLOR
+
     Component.onCompleted: {
         if (WiFiManager) {
             WiFiManager.checkCurrentConnectionStatus();
@@ -40,9 +43,9 @@ Item {
         target: WiFiManager
         function onScanCompleted(networks) {
 
-            for (var i = 0; i < networks.length; i++) {
-                console.log("SSID:", networks[i].ssid, "Richiede password:", networks[i].requiresPassword, "Salvata:", networks[i].networkKnown);
-            }
+            //for (var i = 0; i < networks.length; i++) {
+            //    console.log("SSID:", networks[i].ssid, "Richiede password:", networks[i].requiresPassword, "Salvata:", networks[i].networkKnown);
+            //}
             NetUtils.updateNetworkList(networks, wifiListModel);
 
         }
@@ -122,28 +125,6 @@ Item {
     }
 
 
-
-
-    /*Connections {
-        target: wifiScanDialog
-        function onNetworkSelected(ssid, requiresPassword, networkKnown) {
-            selectedNetwork = {
-                "ssid": ssid,
-                "lock": requiresPassword,
-                "isSaved": networkKnown
-            };
-            wifiScanDialog.visible = false;
-            let result = NetUtils.checkPasswordLock(selectedNetwork);
-            if (result.shouldConnect) {
-                if (WiFiManager) {
-                    WiFiManager.connectToNetwork(selectedNetwork.ssid, "");
-                }
-            }
-            passwordDialog.visible = true;
-        }
-    }*/
-
-
     ListModel {
         id: wifiListModel
     }
@@ -183,13 +164,13 @@ Item {
                 break;
 
             default:
-                console.log("Stato non riconosciuto");
+                //console.log("Stato non riconosciuto");
                 break;
             }
         }
 
         onSsidClicked: {
-            console.log("Pressione mouse area wifi");
+            //console.log("Pressione mouse area wifi");
             //if (wifiStatusColor !== Colors.GREEN_COLOR){
             wifiScanDialog.visible = true;
             NetUtils.startNetworkScan();
@@ -248,7 +229,7 @@ Item {
             }else{
                 wiFiStatusBar.stopTimerClosure = false
                 setProperty(wiFiStatusBar, "restartTimerClosure", true, wiFiStatusBar.stopTimerClosure)
-                console.log("Scan chiuso, restart timer");
+                //console.log("Scan chiuso, restart timer");
             }
         }
 
@@ -283,6 +264,28 @@ Item {
         z: 10
         width: parent.width
         anchors.bottom: parent.bottom
+
+    }
+
+    MyComponents.TcpStatusIcon{
+        id: tcpStatusIcon
+        anchors {
+
+            left: wiFiStatusBar.right
+            top: parent.top
+            leftMargin: 10
+            topMargin: 10
+
+        }
+        tcpStatusColor: "white"
+        borderColor: tcpStatusColor
+        iconSource: tcpStatusImg
+        circleRadius: 20
+        visible: true
+
+        onLongPressed: {
+            tcpClient.connectToESP32("192.168.4.1", 8080);
+        }
 
     }
     

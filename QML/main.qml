@@ -11,7 +11,7 @@ ApplicationWindow {
     Rectangle {
         id: mainContainer
         anchors.fill: parent
-        color: "lightgrey"
+        color: "blue"
 
         // Rotazione di 90 gradi
         transform: Rotation {
