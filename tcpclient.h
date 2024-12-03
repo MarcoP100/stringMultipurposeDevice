@@ -7,6 +7,8 @@
 class tcpClient : public QObject
 {
     Q_OBJECT
+
+
 public:
     explicit tcpClient(QObject *parent = nullptr);
     ~tcpClient();
@@ -14,8 +16,11 @@ public:
     Q_INVOKABLE void connectToESP32(const QString &host, quint16 port);
 
 
+
 signals:
     void connectionFailed(const QString &error); // Segnale per notificare errori
+
+    void rawDataReceived(const QByteArray &data);
 
 private slots:
     void onConnected();

@@ -49,6 +49,8 @@ qt_add_qml_module(appStringMultipurposeDevice
         QML_FILES QML/Components/WiFiStatusIcon.qml
         QML_FILES QML/Dialogs/PasswordDialog.qml
         QML_FILES QML/Components/TcpStatusIcon.qml
+        SOURCES dynamometerdata.h dynamometerdata.cpp
+        QML_FILES QML/Components/DynamometerValue.qml
 
 )
 

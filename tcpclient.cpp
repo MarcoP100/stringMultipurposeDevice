@@ -1,4 +1,6 @@
 #include "tcpclient.h"
+#include <QDebug>
+
 
 tcpClient::tcpClient(QObject *parent)
     : QObject{parent}
@@ -56,7 +58,7 @@ void tcpClient::sendData(const QString &data) {
 
 void tcpClient::onReadyRead() {
     QByteArray data = socket->readAll();
-    qDebug() << "Data received:" << data;
+    emit rawDataReceived(data);
 }
 
 void tcpClient::cleanup() {
@@ -65,3 +67,5 @@ void tcpClient::cleanup() {
         socket->waitForDisconnected(3000);
     }
 }
+
+

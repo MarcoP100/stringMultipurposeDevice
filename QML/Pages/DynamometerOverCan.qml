@@ -24,6 +24,9 @@ Item {
     property string tcpStatusImg: "qrc:/tcp_disable_gy.svg"
     property string tcpStatusColor: Colors.DARK_GREY_COLOR
 
+    property string dynamometerState: "E"
+    property real dynamometerVal: 0
+
     Component.onCompleted: {
         if (WiFiManager) {
             WiFiManager.checkCurrentConnectionStatus();
@@ -124,6 +127,15 @@ Item {
         }
     }
 
+    Connections {
+        target: dynamometerData
+        function onDecodedMessage(state, value){
+            dynamometerState = state;
+            dynamometerVal = parseFloat(value) / 2;
+            //console.log("Data ricevuto: ", dynamometerState, "--- ", dynamometerVal);
+    }
+
+    }
 
     ListModel {
         id: wifiListModel
@@ -287,6 +299,17 @@ Item {
             tcpClient.connectToESP32("192.168.4.1", 8080);
         }
 
+    }
+
+    MyComponents.DynamometerValue{
+        id: dynamometerValue
+        anchors{
+            bottom: parent.bottom
+            bottomMargin: 10
+            horizontalCenter: parent.horizontalCenter
+        }
+        dynaStatus: dynamometerState
+        dynaValue: dynamometerVal
     }
     
     // funzioni

@@ -9,6 +9,7 @@
 #include <QJSEngine>
 #include <QDBusMetaType>
 
+
 typedef QMap<QString, QVariantMap> NestedMap;
 Q_DECLARE_METATYPE(NestedMap)
 

@@ -5,6 +5,7 @@
 #include "wifimanager.h"
 #include <QQmlContext>
 #include "tcpclient.h"
+#include "dynamometerdata.h"
 
 
 int main(int argc, char *argv[])
@@ -33,6 +34,17 @@ int main(int argc, char *argv[])
 
     tcpClient *tcp = new tcpClient();
     engine.rootContext()->setContextProperty("tcpClient", tcp);
+
+    dynamometerData *dynDecoder = new dynamometerData();
+    engine.rootContext()->setContextProperty("dynamometerData", dynDecoder);
+
+    // collegamento segnali
+    QObject::connect(tcp, &tcpClient::rawDataReceived,dynDecoder, [&](const QByteArray &data) {
+        dynDecoder->decodeMessage(data);
+
+    });
+
+
 
     const QUrl url(QStringLiteral("qrc:/StringMultipurposeDevice/QML/main.qml"));
     QObject::connect(

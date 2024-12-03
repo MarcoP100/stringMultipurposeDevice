@@ -1,5 +1,7 @@
 #include <NetworkManager.h>
 #include "wifimanager.h"
+#include <QDebug>
+
 
 
 WiFiManager::WiFiManager(QObject *parent)
