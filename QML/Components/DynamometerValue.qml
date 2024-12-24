@@ -14,13 +14,31 @@ Rectangle {
     border.color: "black"
     border.width: 2
 
+    FontLoader {
+        id: dinCondensedFont
+        source: "qrc:/fonts/DSEG7Classic-Regular.ttf"
+    }
+
+    Text {
+        id: backText
+        text: "888888" // Mostra il valore con una cifra decimale
+        anchors.centerIn: parent
+        font.family: dinCondensedFont.name
+        font.pixelSize: 150
+        color: "black"
+        opacity: 0.1
+    }
+
 
     Text {
         id: valueText
-        text: dynaValue.toFixed(1) // Mostra il valore con una cifra decimale
+        text: dynaValue.toFixed(0) // Mostra il valore con una cifra decimale
         anchors.centerIn: parent
-        font.pixelSize: 130
+        font.family: dinCondensedFont.name
+        font.pixelSize: 150
         color: dynaStatus === "E" ? "red" : dynaStatus === "S" ? "black" : dynaStatus === "N" ? "green" : "blue"
     }
+
+
 
 }

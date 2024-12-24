@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
 
     tcpClient *tcp = new tcpClient();
     engine.rootContext()->setContextProperty("tcpClient", tcp);
+    //qmlRegisterType<tcpClient>("com.example.tcpclient", 1, 0, "TcpClient"); per creare istanze da qml
 
     dynamometerData *dynDecoder = new dynamometerData();
     engine.rootContext()->setContextProperty("dynamometerData", dynDecoder);
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
         dynDecoder->decodeMessage(data);
 
     });
+
 
 
 

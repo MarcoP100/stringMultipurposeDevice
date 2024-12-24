@@ -6,6 +6,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
 
+
 find_package(Qt6 6.2 COMPONENTS Quick VirtualKeyboard Svg Core Network DBus REQUIRED )
 
 # Trova PkgConfig
@@ -53,6 +54,13 @@ qt_add_qml_module(appStringMultipurposeDevice
         QML_FILES QML/Components/DynamometerValue.qml
 
 )
+
+set(OTHER_FILES eglfs.json)
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND EXISTS "/dev/dri")
+    message(STATUS "Configuring for Raspberry Pi with EGLFS")
+    set(QT_QPA_EGLFS_KMS_CONFIG ${CMAKE_SOURCE_DIR}/eglfs.json)
+endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

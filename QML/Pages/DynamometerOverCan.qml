@@ -132,7 +132,7 @@ Item {
         function onDecodedMessage(state, value){
             dynamometerState = state;
             dynamometerVal = parseFloat(value) / 2;
-            //console.log("Data ricevuto: ", dynamometerState, "--- ", dynamometerVal);
+            console.log("Data ricevuto: ", dynamometerState, "--- ", dynamometerVal);
     }
 
     }
@@ -324,6 +324,24 @@ Item {
             } else {
                 console.log("Errore: la propriet�", propertyName, "non esiste nell'oggetto.");
             }
+    }
+
+    Text {
+        text: {
+            switch (tcpClient.socketState) {
+            case tcpClient.UnconnectedState: return "Unconnected";
+                        case tcpClient.HostLookupState: return "HostLookup";
+                        case tcpClient.ConnectingState: return "Connecting";
+                        case tcpClient.ConnectedState: return "Connected";
+                        case tcpClient.BoundState: return "Bound";
+                        case tcpClient.ClosingState: return "Closing";
+                        default: return "Unknown";
+            }
+        }
+    }
+
+    Rectangle {
+        color: tcpClient.socketState === tcpClient.Connected ? "green" : "red"
     }
 }
 
