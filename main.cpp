@@ -6,6 +6,7 @@
 #include <QQmlContext>
 #include "tcpclient.h"
 #include "dynamometerdata.h"
+#include "canmanager.h"
 
 
 int main(int argc, char *argv[])
@@ -32,12 +33,18 @@ int main(int argc, char *argv[])
      // Setta il context property per avere accesso a wifiManager come istanza
      //engine.rootContext()->setContextProperty("wifiManager", &wifiManager);
 
-    tcpClient *tcp = new tcpClient();
-    engine.rootContext()->setContextProperty("tcpClient", tcp);
-    //qmlRegisterType<tcpClient>("com.example.tcpclient", 1, 0, "TcpClient"); per creare istanze da qml
-
     dynamometerData *dynDecoder = new dynamometerData();
     engine.rootContext()->setContextProperty("dynamometerData", dynDecoder);
+
+    CanManager *canManager= new CanManager(dynDecoder, nullptr);
+    engine.rootContext()->setContextProperty("canManager", canManager);
+
+
+    tcpClient *tcp = new tcpClient(canManager, nullptr);
+    engine.rootContext()->setContextProperty("tcpClient", tcp);
+    qmlRegisterUncreatableType<tcpClient>("com.example.tcpClient", 1, 0, "TcpClient", "Enum only");
+
+
 
     // collegamento segnali
     QObject::connect(tcp, &tcpClient::rawDataReceived,dynDecoder, [&](const QByteArray &data) {
@@ -45,10 +52,16 @@ int main(int argc, char *argv[])
 
     });
 
+    QObject::connect(tcp, &tcpClient::connectionTimeout, dynDecoder, [&]() {
+        //qDebug() << "Timeout scattato, impostiamo i dati a ------";
+        dynDecoder->decodeMessage("\x02X ------\x03");  // Usa lo stesso formato dei dati reali
+    });
 
 
 
-    const QUrl url(QStringLiteral("qrc:/StringMultipurposeDevice/QML/main.qml"));
+
+
+   const QUrl url(QStringLiteral("qrc:/StringMultipurposeDevice/QML/main.qml"));
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreated,

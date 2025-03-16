@@ -34,8 +34,25 @@ dynamometerData::DecodedMessage dynamometerData::decodeMessage(const QByteArray 
         if (rawMessage.size() >= 2) {
             message.state = rawMessage.left(1);         // Stato
             //qDebug() << "Stato estratto:" << message.state;
-            message.value = rawMessage.mid(1).trimmed(); // Valore
-            qDebug() << "Valore estratto:" << message.value;
+            QString valueStr = rawMessage.mid(1).trimmed(); // Valore
+            //qDebug() << "Valore estratto:" << message.value;
+
+
+            bool isNumeric;
+            int numericValue = valueStr.toInt(&isNumeric);
+
+            // Se il valore non � numerico, � fuori range o negativo, impostiamo "------"
+            if ((!isNumeric) || (numericValue < 0) || (numericValue > 999999)) {
+                message.value = "------";
+            } else {
+                message.value = QString("%1").arg(numericValue / 2, 6, 10, QChar(0x2007)); // Stringa a 6 cifre
+                //message.value = QString::number(numericValue / 2).rightJustified(6, ' ', true);
+            }
+
+
+
+
+
             message.isValid = true;
 
             setState(message.state);

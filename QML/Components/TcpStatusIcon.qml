@@ -50,7 +50,7 @@ import "../colors.js" as Colors
             }
 
             onReleased: {
-                console.log("Mouse rilasciato");
+                //console.log("Mouse rilasciato");
                 longPressTimer.stop(); // Ferma il timer per evitare falsi trigger
             }
         }

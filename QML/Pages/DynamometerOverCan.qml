@@ -25,12 +25,13 @@ Item {
     property string tcpStatusColor: Colors.DARK_GREY_COLOR
 
     property string dynamometerState: "E"
-    property real dynamometerVal: 0
+    property string dynamometerVal: "------"
 
     Component.onCompleted: {
         if (WiFiManager) {
             WiFiManager.checkCurrentConnectionStatus();
         }
+
     }
 
 
@@ -131,10 +132,52 @@ Item {
         target: dynamometerData
         function onDecodedMessage(state, value){
             dynamometerState = state;
-            dynamometerVal = parseFloat(value) / 2;
-            console.log("Data ricevuto: ", dynamometerState, "--- ", dynamometerVal);
+            dynamometerVal = value;
+            //console.log("Data ricevuto: ", dynamometerState, "--- ", dynamometerVal);
+        }
+
     }
 
+    Connections {
+        target: tcpClient
+        function onSocketStateChanged(state){
+            console.log("qml: TPCStatus:", state)
+            switch (state) {
+
+                case 0:
+                    console.log("QML: Tcp Disconnesso");
+                    tcpStatusColor = Colors.RED_COLOR
+                    tcpStatusImg = "qrc:/tcp_disable_rd.svg"
+                    break;
+
+                case 3:
+                    console.log("QML: ConnectedState");
+                    tcpStatusColor = Colors.GREEN_COLOR
+                    tcpStatusImg = "qrc:/tcp_connected_gn.svg"
+                    break;
+
+                case 1:
+                case 2:
+                case 4:
+                case 5:
+                    console.log("QML: ConnectingState");
+                    tcpStatusColor = Colors.YELLOW_COLOR
+                    tcpStatusImg = "qrc:/tcp_connecting_ye.svg"
+                    break;
+
+                case 6:
+                    console.log("QML: ListeningState");
+                    tcpStatusColor = Colors.DARK_GREY_COLOR
+                    tcpStatusImg = "qrc:/tcp_disable_gy.svg"
+                    break;
+
+                default:
+                    console.log("QML: Stato della connessione sconosciuto.");
+                    tcpStatusColor = Colors.RED_COLOR
+                    tcpStatusImg = "qrc:/tcp_disable_rd.svg"
+            }
+
+        }
     }
 
     ListModel {
@@ -296,7 +339,11 @@ Item {
         visible: true
 
         onLongPressed: {
-            tcpClient.connectToESP32("192.168.4.1", 8080);
+            if (tcpClient.getSocketState() === 3)
+                tcpClient.disconnectFromESP32();
+            else
+                tcpClient.connectToESP32("192.168.4.1", 8080);
+
         }
 
     }
@@ -315,14 +362,14 @@ Item {
     // funzioni
     function setProperty(object, propertyName, value, lock) {
         if (lock) {
-            console.log("Modifica non consentita: propriet� bloccata!");
+            console.log("Modifica non consentita: proprietà bloccata!");
             return;
         }
         if (object && propertyName in object) {
                 object[propertyName] = value;  // Modifica dinamica della propriet�
                 //console.log(propertyName, "modificata a:", value, lock);
             } else {
-                console.log("Errore: la propriet�", propertyName, "non esiste nell'oggetto.");
+                console.log("Errore: la proprietà", propertyName, "non esiste nell'oggetto.");
             }
     }
 

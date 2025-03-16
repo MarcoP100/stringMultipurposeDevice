@@ -13,6 +13,7 @@
         <file>tcp_disable_rd.svg</file>
         <file>tcp_disable_gy.svg</file>
         <file>tcp_connected_gn.svg</file>
+        <file>tcp_connecting_ye.svg</file>
         <file>fonts/D-DINCondensed.ttf</file>
         <file>fonts/DSEG7Classic-Regular.ttf</file>
     </qresource>

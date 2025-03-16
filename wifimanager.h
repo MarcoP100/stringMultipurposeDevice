@@ -33,7 +33,8 @@ public:
         ConnectionFailed,
         Disconnected,
         StatusUnknown,
-        Disconnecting
+        Disconnecting,
+        Timeout
     };
     Q_ENUM(ConnectionStatus)
 

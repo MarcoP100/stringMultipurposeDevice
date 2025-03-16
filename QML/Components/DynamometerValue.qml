@@ -4,8 +4,8 @@ import QtQuick.Controls 2.15
 Rectangle {
     id: valueDisplay
 
-    property string dynaStatus: "E" // Stato iniziale: Nuovo
-    property real dynaValue: 0     // Valore iniziale: 0
+    property string dynaStatus: "X" // Stato iniziale: Nuovo
+    property string dynaValue: "------"     // Valore iniziale: 0
 
     width: 780
     height: 350
@@ -32,7 +32,7 @@ Rectangle {
 
     Text {
         id: valueText
-        text: dynaValue.toFixed(0) // Mostra il valore con una cifra decimale
+        text: dynaValue // Mostra il valore con una cifra decimale
         anchors.centerIn: parent
         font.family: dinCondensedFont.name
         font.pixelSize: 150
