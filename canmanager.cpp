@@ -95,7 +95,7 @@ void CanManager::sendPeriodicMessage()
     canData.append('\xFF');
     canData.append('\xFF');
 
-    sendCanMessage(0x123, canData);
+    sendCanMessage(0x400, canData);
 }
 
 void CanManager::startSending()

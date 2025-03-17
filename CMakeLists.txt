@@ -36,13 +36,19 @@ qt_add_qml_module(appStringMultipurposeDevice
         QML/Components/NetworkList.qml
         QML/Components/WiFiNetworkItem.qml
         QML/colors.js
+
     SOURCES
-
-
         tcpclient.h
         tcpclient.cpp
         wifimanager.h
         wifimanager.cpp
+        canmanager.h
+        canmanager.cpp
+        backendsystem.h
+        backendsystem.cpp
+        dynamometerdata.h
+        dynamometerdata.cpp
+
     RESOURCES
         resources/resources.qrc
         QML_FILES QML/networkUtils.js
@@ -50,9 +56,10 @@ qt_add_qml_module(appStringMultipurposeDevice
         QML_FILES QML/Components/WiFiStatusIcon.qml
         QML_FILES QML/Dialogs/PasswordDialog.qml
         QML_FILES QML/Components/TcpStatusIcon.qml
-        SOURCES dynamometerdata.h dynamometerdata.cpp
         QML_FILES QML/Components/DynamometerValue.qml
-        SOURCES canmanager.h canmanager.cpp
+        QML_FILES
+        QML_FILES QML/Dialogs/ShutdownDialog.qml
+        QML_FILES QML/Components/ShutdownIcon.qml
 
 )
 

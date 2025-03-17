@@ -390,6 +390,52 @@ Item {
     Rectangle {
         color: tcpClient.socketState === tcpClient.Connected ? "green" : "red"
     }
+
+
+    MyComponents.ShutdownIcon{
+        id: shutdownIcon
+        anchors {
+                right: parent.right
+                top: parent.top
+                margins: 10
+            }
+        iconSource: "qrc:shutdown_red.svg"
+        width_height: 50
+        innerColor: 'black'
+        borderColor: 'red'
+        onSingleClicked: shutdownDialog.visible = true;
+    }
+
+
+
+    MyDialogs.ShutdownDialog {
+        id: shutdownDialog
+        anchors.centerIn: parent
+        visible: false
+
+        onMouseAreaClicked:{
+            shutdownDialog.visible = false;
+
+        }
+
+        onRebootClicked: {
+
+            shutdownDialog.visible = false;
+            console.log("rebootSystem");
+            BackendSystem.rebootSystem()
+
+        }
+
+        onShutdownClicked: {
+            shutdownDialog.visible = false;
+            console.log("shutdownSystem");
+            BackendSystem.shutdownSystem()
+
+        }
+
+
+    }
+
 }
 
 

@@ -7,6 +7,7 @@
 #include "tcpclient.h"
 #include "dynamometerdata.h"
 #include "canmanager.h"
+#include "backendsystem.h"
 
 
 int main(int argc, char *argv[])
@@ -32,6 +33,9 @@ int main(int argc, char *argv[])
 
      // Setta il context property per avere accesso a wifiManager come istanza
      //engine.rootContext()->setContextProperty("wifiManager", &wifiManager);
+
+    BackendSystem backendSystem;
+    engine.rootContext()->setContextProperty("BackendSystem", &backendSystem);
 
     dynamometerData *dynDecoder = new dynamometerData();
     engine.rootContext()->setContextProperty("dynamometerData", dynDecoder);
