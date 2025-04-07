@@ -38,7 +38,7 @@ Rectangle {
     signal longPressed()
     signal ssidClicked()
     signal iconClicked()
-    property int circleRadius: 20
+    property int widthWifi: 20
     property string networkText: "Selezionare rete"
     property string circleBorderColor: Colors.DARK_GREY_COLOR
     property string iconStatusImg: "qrc:/wifi_off.svg"
@@ -48,9 +48,9 @@ Rectangle {
 
 
 
-    width: circleRadius * 2
-    height: circleRadius * 2
-    radius: circleRadius
+    width: widthWifi
+    height: widthWifi
+    radius: 5
     color: "lightblue"
     border.color: "black" // Colore del bordo
     border.width: 1  // Spessore del bordo
@@ -70,9 +70,9 @@ Rectangle {
             when: expandIcon
             PropertyChanges {
                 target: wifiIcon
-                width: ((circleRadius * 2) + networkName.width + (circleRadius * 2) - 10) // Calcola la larghezza massima
-                height: circleRadius * 2
-                radius: circleRadius
+                width: ((widthWifi) + networkName.width + (widthWifi) - 10) // Calcola la larghezza massima
+                height: widthWifi
+                radius: 5
                 anchors.left: parent.left // Mantieni il wifiIcon ancorato a sinistra
 
             }
@@ -130,7 +130,7 @@ Rectangle {
         borderColor: circleBorderColor
         iconSource: iconStatusImg
         z: parent.z + 1
-        circleRadius: circleRadius
+        widthIcon: widthWifi
         visible: true
 
         onSingleClicked: {
@@ -151,6 +151,7 @@ Rectangle {
         anchors.verticalCenter: wifiIcon.verticalCenter
         anchors.left: wifiStatusIcon.right
         anchors.leftMargin: 10 // Margine tra l'icona e il testo
+        font.pixelSize: 25
         width: Math.min(implicitWidth, 500) // Limita la larghezza al massimo a 200 oppure alla larghezza del rettangolo - margine
         elide: Text.ElideRight // Troncamento con "..." se il testo supera la larghezza
         opacity: wifiIcon.state === "expanded" ? 1.0 : 0.0 // Inizia invisibile

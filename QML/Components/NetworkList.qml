@@ -6,33 +6,37 @@ Flickable {
     id: flickableArea
 
     property var listModel
-    property int maxVisibleItems
+    property int maxVisibleItemsList
     property bool listVisible
     property int flickableAreaWidth
+    property int itemHeight: 40
 
-    property alias listViewContentHeight: listView.contentHeight;
+    property alias listViewContentHeight: listView.height;
 
     signal networkSelected(string ssid, bool requiresPassword, bool networkKnown)
 
     width: flickableAreaWidth
-    height: Math.min(listViewContentHeight, maxVisibleItems * 40) // Altezza dinamica o massimo consentito
-    contentHeight: listViewContentHeight
+    height: listViewContentHeight
+    //height: Math.min(listViewContentHeight, maxVisibleItemsList * itemHeight)
+    contentHeight: listView.contentHeight
     clip: true  // Limita il contenuto visibile all'altezza dell'elemento
     // Imposta il comportamento per fermarsi ai limiti
     boundsBehavior: Flickable.StopAtBounds
     interactive: false
     flickableDirection: Flickable.VerticalFlick
 
+
     ListView {
         id: listView
 
         width: parent.width
-        height: contentHeight  // Altezza dinamica per mostrare tutto il contenuto
+        height: Math.min(contentHeight, maxVisibleItems * itemHeight)
         model: listModel
         focus: true  // Assicurati che la ListView mantenga il focus
         interactive: true  // Mantieni la ListView interattiva
         visible: listVisible
         clip: true
+        snapMode: ListView.SnapToItem
         delegate: WiFiNetworkItem {
 
             wifiItemWidth: listView.width

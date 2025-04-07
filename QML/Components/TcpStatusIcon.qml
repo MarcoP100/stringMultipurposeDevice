@@ -11,12 +11,12 @@ import "../colors.js" as Colors
         property color tcpStatusColor: "white"
         property color borderColor: Colors.DARK_GREY_COLOR
         property string iconSource: "qrc:/tcp_disable_gy.svg"
-        property int circleRadius: 20
+        property int widthIcon: 20
 
 
-        width: circleRadius * 2
-        height: circleRadius * 2
-        radius: circleRadius
+        width: widthIcon
+        height: widthIcon
+        radius: 5
         color: tcpStatusColor
         border.color: borderColor    // Colore del bordo
         border.width: 1  // Spessore del bordo
@@ -33,25 +33,27 @@ import "../colors.js" as Colors
             anchors.fill: parent
 
 
-            onPressAndHold:{
+            /*onPressAndHold:{
                 console.log("Icona premuta a lungo");
                 tcpStatusCircle.longPressed();  // Emissione del segnale `longPressed`
-            }
+            }*/
 
-            Timer {
+            /*Timer {
                 id: longPressTimer
-                interval: 2000 // 3 secondi
+                interval: 10// 3 secondi
                 repeat: false
                 onTriggered: tcpMouseArea.onPressAndHold
-            }
+            }*/
 
             onPressed: {
-                longPressTimer.start(); // Avvia il timer per rilevare la pressione prolungata
+                //longPressTimer.start(); // Avvia il timer per rilevare la pressione prolungata
             }
 
             onReleased: {
                 //console.log("Mouse rilasciato");
-                longPressTimer.stop(); // Ferma il timer per evitare falsi trigger
+                //longPressTimer.stop(); // Ferma il timer per evitare falsi trigger
+                //tcpMouseArea.onPressAndHold
+                tcpStatusCircle.longPressed();
             }
         }
     }

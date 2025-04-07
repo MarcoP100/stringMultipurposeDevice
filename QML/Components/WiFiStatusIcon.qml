@@ -12,12 +12,12 @@ import "../colors.js" as Colors
         property color wifiStatusColor: "white"
         property color borderColor: Colors.DARK_GREY_COLOR
         property string iconSource: "qrc:/wifi_off_bk.svg"
-        property int circleRadius: 20
+        property int widthIcon: 20
 
 
-        width: circleRadius * 2
-        height: circleRadius * 2
-        radius: circleRadius
+        width: widthIcon
+        height: widthIcon
+        radius: 5
         color: wifiStatusColor
         border.color: borderColor    // Colore del bordo
         border.width: 1  // Spessore del bordo

@@ -27,6 +27,8 @@ Item {
     property string dynamometerState: "E"
     property string dynamometerVal: "------"
 
+    property int iconWidth: 65
+
     Component.onCompleted: {
         if (WiFiManager) {
             WiFiManager.checkCurrentConnectionStatus();
@@ -184,13 +186,18 @@ Item {
         id: wifiListModel
     }
 
+    MyComponents.SwipeButtonArea {
+        target: dynaOnCanPage  // Passiamo il riferimento del pulsante
+        flickRef: flickableRef  // Passiamo il riferimento del Flickable
+    }
+
 
     MyComponents.WiFiStatusBar {
         id: wiFiStatusBar
 
         circleBorderColor: wifiStatusColor
         iconStatusImg: wifiIconStatusImg
-        circleRadius : 20
+        widthWifi : iconWidth
         networkText: networkName === "" ? "Selezionare rete" : networkName
 
 
@@ -238,13 +245,15 @@ Item {
             setProperty(wiFiStatusBar, "restartTimerClosure", true, wiFiStatusBar.stopTimerClosure)
         }
 
+
+
     }
 
 
     MyDialogs.WifiScanDialog {
         id: wifiScanDialog
         anchors.centerIn: parent
-        maxVisibleItems: 5
+        maxVisibleItems: 4
         wifiManagerBusy: WiFiManager.busy
         wifiListModel: wifiListModel
         visible: false
@@ -335,7 +344,7 @@ Item {
         tcpStatusColor: "white"
         borderColor: tcpStatusColor
         iconSource: tcpStatusImg
-        circleRadius: 20
+        widthIcon: iconWidth
         visible: true
 
         onLongPressed: {
@@ -352,7 +361,7 @@ Item {
         id: dynamometerValue
         anchors{
             bottom: parent.bottom
-            bottomMargin: 10
+            bottomMargin: 5
             horizontalCenter: parent.horizontalCenter
         }
         dynaStatus: dynamometerState
@@ -373,7 +382,7 @@ Item {
             }
     }
 
-    Text {
+    /*Text {
         text: {
             switch (tcpClient.socketState) {
             case tcpClient.UnconnectedState: return "Unconnected";
@@ -385,7 +394,7 @@ Item {
                         default: return "Unknown";
             }
         }
-    }
+    }*/
 
     Rectangle {
         color: tcpClient.socketState === tcpClient.Connected ? "green" : "red"

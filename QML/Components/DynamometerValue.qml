@@ -7,9 +7,9 @@ Rectangle {
     property string dynaStatus: "X" // Stato iniziale: Nuovo
     property string dynaValue: "------"     // Valore iniziale: 0
 
-    width: 780
-    height: 350
-    radius: 10
+    width: 790
+    height: 370
+    radius: 4
     color: "lightblue"
     border.color: "black"
     border.width: 2
@@ -26,7 +26,7 @@ Rectangle {
         font.family: dinCondensedFont.name
         font.pixelSize: 150
         color: "black"
-        opacity: 0.1
+        opacity: 0.03
     }
 
 
@@ -39,6 +39,16 @@ Rectangle {
         color: dynaStatus === "E" ? "red" : dynaStatus === "S" ? "black" : dynaStatus === "N" ? "green" : "blue"
     }
 
-
+    Text {
+        id: umText
+        text: "daN" // Mostra il valore con una cifra decimale
+        x: 620
+        y: 10
+        font.family: "Arial"
+        font.bold: true
+        font.italic: true
+        font.pixelSize: 60
+        color: "black"
+    }
 
 }

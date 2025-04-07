@@ -57,7 +57,7 @@ Item {
 
             MyComponents.NetworkList {
                 id: networkList
-                maxVisibleItems: 5
+                maxVisibleItemsList: maxVisibleItems
                 flickableAreaWidth: parent.width
                 // Inserisci un modello di esempio per il test
                 listModel: wifiListModel
