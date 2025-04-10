@@ -60,6 +60,7 @@ qt_add_qml_module(appStringMultipurposeDevice
         QML_FILES
         QML_FILES QML/Dialogs/ShutdownDialog.qml
         QML_FILES QML/Components/ShutdownIcon.qml
+        SOURCES udpclient.h udpclient.cpp
 
 )
 
