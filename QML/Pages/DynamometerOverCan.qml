@@ -75,38 +75,38 @@ Item {
 
             switch (status) {
 
-            case WiFiManager.Timeout:
+            case WiFiStatusEnum.Timeout:
                 //console.log("La connessione ha superato il timeout.");
                 wifiStatusColor = Colors.RED_COLOR
                 wifiIconStatusImg = "qrc:/wifi_off.svg"
                 break;
-            case WiFiManager.Connecting:
+            case WiFiStatusEnum.Connecting:
                 //console.log("Connessione in corso...");
                 wifiStatusColor = Colors.YELLOW_COLOR
                 wifiIconStatusImg = "qrc:/wifi_connecting.svg"
                 wiFiStatusBar.stopTimerClosure = true;
                 break;
-            case WiFiManager.Connected:
+            case WiFiStatusEnum.Connected:
                 //console.log("Connessione avvenuta con successo.");
                 wifiStatusColor = Colors.GREEN_COLOR
                 wifiIconStatusImg = "qrc:/wifi_on.svg"
                 break;
-            case WiFiManager.WrongPassword:
+            case WiFiStatusEnum.WrongPassword:
                 //console.log("Password errata. Riprovare.");
                 wifiStatusColor = Colors.RED_COLOR
                 wifiIconStatusImg = "qrc:/wifi_off.svg"
                 break;
-            case WiFiManager.ConnectionFailed:
+            case WiFiStatusEnum.ConnectionFailed:
                 //console.log("Connessione fallita.");
                 wifiStatusColor = Colors.RED_COLOR
                 wifiIconStatusImg = "qrc:/wifi_off.svg"
                 break;
-            case WiFiManager.Disconnected:
+            case WiFiStatusEnum.Disconnected:
                 //console.log("Disconnesso.");
                 wifiStatusColor = Colors.DARK_GREY_COLOR
                 wifiIconStatusImg = "qrc:/wifi_off_bk.svg"
                 break;
-            case WiFiManager.StatusUnknown:
+            case WiFiStatusEnum.StatusUnknown:
                 //console.log("Stato Sconosciuto.");
                 wifiStatusColor = Colors.RED_COLOR
                 wifiIconStatusImg = "qrc:/wifi_off.svg"
@@ -181,6 +181,8 @@ Item {
 
         }
     }
+
+
 
     ListModel {
         id: wifiListModel
@@ -331,7 +333,7 @@ Item {
 
     }
 
-    MyComponents.TcpStatusIcon{
+    /*MyComponents.TcpStatusIcon{
         id: tcpStatusIcon
         anchors {
 
@@ -355,7 +357,7 @@ Item {
 
         }
 
-    }
+    }*/
 
     MyComponents.DynamometerValue{
         id: dynamometerValue

@@ -96,8 +96,6 @@ void tcpClient::connectToESP32(const QString &host, quint16 port)
             socket->abort();
 
         }
-
-
     }
 
     if (socket->state() == QTcpSocket::ConnectedState) {

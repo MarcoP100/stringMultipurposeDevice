@@ -39,7 +39,7 @@ Rectangle {
         color: dynaStatus === "E" ? "red" : dynaStatus === "S" ? "black" : dynaStatus === "N" ? "green" : "blue"
     }
 
-    Text {
+    /*Text {
         id: umText
         text: "daN" // Mostra il valore con una cifra decimale
         x: 620
@@ -49,6 +49,6 @@ Rectangle {
         font.italic: true
         font.pixelSize: 60
         color: "black"
-    }
+    }*/
 
 }

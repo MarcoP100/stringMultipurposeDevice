@@ -3,7 +3,6 @@
 #include <QDebug>
 
 
-
 WiFiManager::WiFiManager(QObject *parent)
     : QObject{parent}, m_busy(false)
 {
@@ -37,14 +36,7 @@ WiFiManager::WiFiManager(QObject *parent)
     setupPropertyChangedSignal();
     setupStatusChangedSignal();
 
-
-
 }
-
-QObject* WiFiManager::createSingletonInstance(QQmlEngine*, QJSEngine*) {
-    return new WiFiManager();
-}
-
 
 void WiFiManager::setBusy(bool busy)
 {
@@ -892,6 +884,10 @@ void WiFiManager::setCurrentNetworkName(const QString &ssid){
     if (ssid != m_connectedSsid){
         m_connectedSsid = ssid;
         emit  ssidChanged(m_connectedSsid);
+        qDebug() << "ssidChanged EMESSO con:" << m_connectedSsid;
+        qDebug() << "WiFiManager che emette:" << this;
+    } else {
+        qDebug() << "SSID invariato, niente emit";
     }
     return;
 

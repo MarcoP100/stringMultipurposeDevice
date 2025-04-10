@@ -8,7 +8,7 @@
 #include "dynamometerdata.h"
 #include "canmanager.h"
 #include "backendsystem.h"
-
+#include "udpclient.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,7 +24,10 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    qmlRegisterSingletonType<WiFiManager>("com.wifiManager", 1, 0, "WiFiManager", WiFiManager::createSingletonInstance);
+    WiFiManager *wifi = new WiFiManager();  // istanza unica
+    engine.rootContext()->setContextProperty("WiFiManager", wifi);  // accessibile in QML
+    qmlRegisterUncreatableType<WiFiManager>("com.wifiManager", 1, 0, "WiFiStatusEnum",
+                                            "WiFiManager is available only via context property");
     // Registra il tipo per D-Bus
     WiFiManager::registerDBusTypes();
 
@@ -48,9 +51,12 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("tcpClient", tcp);
     qmlRegisterUncreatableType<tcpClient>("com.example.tcpClient", 1, 0, "TcpClient", "Enum only");
 
+    udpClient *udp = new udpClient(nullptr);
+    engine.rootContext()->setContextProperty("udpClient", udp);
+    udp->bindToWiFiManager(wifi);
 
 
-    // collegamento segnali
+    /*// collegamento segnali tcp
     QObject::connect(tcp, &tcpClient::rawDataReceived,dynDecoder, [&](const QByteArray &data) {
         dynDecoder->decodeMessage(data);
 
@@ -59,10 +65,19 @@ int main(int argc, char *argv[])
     QObject::connect(tcp, &tcpClient::connectionTimeout, dynDecoder, [&]() {
         //qDebug() << "Timeout scattato, impostiamo i dati a ------";
         dynDecoder->decodeMessage("\x02X ------\x03");  // Usa lo stesso formato dei dati reali
+    });*/
+
+
+    // collegamento segnali udp
+    QObject::connect(udp, &udpClient::rawDataReceived,dynDecoder, [&](const QByteArray &data) {
+        dynDecoder->decodeMessage(data);
+
     });
 
-
-
+    QObject::connect(udp, &udpClient::udpConnectionTimeout, dynDecoder, [&]() {
+        //qDebug() << "Timeout scattato, impostiamo i dati a ------";
+        dynDecoder->decodeMessage("\x02X ------\x03");  // Usa lo stesso formato dei dati reali
+    });
 
 
    const QUrl url(QStringLiteral("qrc:/StringMultipurposeDevice/QML/main.qml"));
