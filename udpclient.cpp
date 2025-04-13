@@ -1,9 +1,11 @@
 #include "udpclient.h"
 #include <QDebug>
+#include "protocol_constants.h"
 
 #define UDP_PORT 50000  // Deve corrispondere a quello usato sull'ESP
 #define ESP_ADDRESS "192.168.4.1"
 #define ESP_SSID_NAME "Dynamometer_ESP32C6"
+#define ESP_PORT 8080
 
 
 udpClient::udpClient(QObject *parent) : QObject(parent) {
@@ -30,8 +32,14 @@ udpClient::udpClient(QObject *parent) : QObject(parent) {
     sendTimer->setInterval(1000);  // 5s di timeout
     sendTimer->setSingleShot(true);
 
+    QByteArray msg;
+    msg.append(PROTO_START);
+    msg.append(PROTO_ID);
+    msg.append(MSG_TYPE_HEARTBEAT);
+    msg.append(PROTO_END);
+
     connect(sendTimer, &QTimer::timeout, this, [=]() {
-        sendMessage(QByteArray("\x02A5\x03"));
+        sendMessage(msg);
     });
 
     qDebug() << "Nuovo socket UDP creato e segnali collegati.";
@@ -53,9 +61,8 @@ void udpClient::processPendingDatagrams() {
 
 void udpClient::sendMessage(const QByteArray &message) {
     QHostAddress espAddress(ESP_ADDRESS);  // Indirizzo IP dell'ESP
-    quint16 espPort = 12345;                // Porta su cui l'ESP � in ascolto
 
-    qint64 sent = udpSocket->writeDatagram(message, espAddress, espPort);
+    qint64 sent = udpSocket->writeDatagram(message, espAddress, ESP_PORT);
     if (sent > 0) {
         sendTimer->start();
     } else {
@@ -81,4 +88,5 @@ void udpClient::bindToWiFiManager(WiFiManager *manager) {
         }
     });
 }
+
 

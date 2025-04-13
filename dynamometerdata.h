@@ -16,8 +16,12 @@ public:
     explicit dynamometerData(QObject *parent = nullptr);
 
     struct DecodedMessage {
+        QString senderId;
+        QString msgType;
+        int counter;
         QString state; // Stato (E/S/N)
         QString value; // Valore
+        QString crc;
         bool isValid;  // Se il messaggio � valido
     };
 
