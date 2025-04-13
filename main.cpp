@@ -74,10 +74,7 @@ int main(int argc, char *argv[])
 
     });
 
-    QObject::connect(udp, &udpClient::udpConnectionTimeout, dynDecoder, [&]() {
-        //qDebug() << "Timeout scattato, impostiamo i dati a ------";
-        dynDecoder->decodeMessage("\x02X ------\x03");  // Usa lo stesso formato dei dati reali
-    });
+    QObject::connect(udp, &udpClient::udpConnectionTimeout, dynDecoder, &dynamometerData::handleTimeout);
 
 
    const QUrl url(QStringLiteral("qrc:/StringMultipurposeDevice/QML/main.qml"));

@@ -4,8 +4,17 @@ import QtQuick.Controls 2.15
 Rectangle {
     id: valueDisplay
 
-    property string dynaStatus: "X" // Stato iniziale: Nuovo
-    property string dynaValue: "------"     // Valore iniziale: 0
+    property color displayColor: {
+        if (dynamometerData.dynState === "X")
+            return "blue";  // fallback fisso se non lampeggia
+        if (dynamometerData.dynState === "S")
+            return "black";
+        if (dynamometerData.dynState === "N")
+            return "green";
+        if (dynamometerData.dynState === "E")
+            return "red";
+        return "gray";
+    }
 
     width: 790
     height: 370
@@ -32,14 +41,21 @@ Rectangle {
 
     Text {
         id: valueText
-        text: dynaValue // Mostra il valore con una cifra decimale
+        text: dynamometerData.dynValue // Mostra il valore con una cifra decimale
         anchors.centerIn: parent
         font.family: dinCondensedFont.name
         font.pixelSize: 150
-        color: dynaStatus === "E" ? "red" : dynaStatus === "S" ? "black" : dynaStatus === "N" ? "green" : "blue"
+        color: displayColor
+
+        SequentialAnimation on color {
+            running: dynamometerData.dynState === "X"
+            loops: Animation.Infinite
+            ColorAnimation { from: "blue"; to: "transparent"; duration: 1000 }
+            ColorAnimation { from: "transparent"; to: "blue"; duration: 1000 }
+        }
     }
 
-    /*Text {
+    Text {
         id: umText
         text: "daN" // Mostra il valore con una cifra decimale
         x: 620
@@ -49,6 +65,17 @@ Rectangle {
         font.italic: true
         font.pixelSize: 60
         color: "black"
-    }*/
+    }
+
+    Text {
+        id: lostText
+        text: "Pacchetti persi: " + dynamometerData.packetsLost
+        font.pixelSize: 20
+        color: "red"
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.margins: 16
+    }
+
 
 }

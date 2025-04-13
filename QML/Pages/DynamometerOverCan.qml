@@ -130,15 +130,6 @@ Item {
         }
     }
 
-    Connections {
-        target: dynamometerData
-        function onDecodedMessage(state, value){
-            dynamometerState = state;
-            dynamometerVal = value;
-            //console.log("Data ricevuto: ", dynamometerState, "--- ", dynamometerVal);
-        }
-
-    }
 
     Connections {
         target: tcpClient
@@ -366,8 +357,7 @@ Item {
             bottomMargin: 5
             horizontalCenter: parent.horizontalCenter
         }
-        dynaStatus: dynamometerState
-        dynaValue: dynamometerVal
+
     }
     
     // funzioni

@@ -1,5 +1,7 @@
 #include "dynamometerdata.h"
 #include <QDebug>
+#include "crc.h"
+#include "protocol_constants.h"
 
 dynamometerData::dynamometerData(QObject *parent) : QObject(parent) {}
 
@@ -41,9 +43,9 @@ dynamometerData::DecodedMessage dynamometerData::decodeMessage(const QByteArray 
             QStringList fields = rawMessage.split('|');
             if (fields.size() == 6) {
 
-                qDebug() << "Ricevuto messaggio da" << fields[0]
+                /*qDebug() << "Ricevuto messaggio da" << fields[0]
                          << "valore:" << fields[4]
-                         << "CRC:" << fields[5];
+                         << "CRC:" << fields[5];*/
 
 
                 message.senderId = fields[0];
@@ -52,7 +54,7 @@ dynamometerData::DecodedMessage dynamometerData::decodeMessage(const QByteArray 
                 message.state = fields[3];
                 message.crc = fields[5];
 
-                if (message.msgType != "V") {
+                if (!isMessageOk(message, data)){
                     return message;  // supporti solo messaggi 'V' al momento
                 }
 
@@ -82,3 +84,81 @@ dynamometerData::DecodedMessage dynamometerData::decodeMessage(const QByteArray 
 
     return message;
 }
+
+
+void dynamometerData::handleTimeout() {
+    setValue("------");
+    setState("X");  // oppure "Timeout" o stato dedicato
+    emit decodedMessage(m_state, m_value);
+}
+
+
+bool dynamometerData::isCounterOk(int newCounter) {
+    if (m_lastCounter < 0) return true; // primo valore
+    int delta = (newCounter - m_lastCounter + 256) % 256;
+    if (delta > 1) {
+        m_packetsLost += (delta - 1);
+        emit packetsLostChanged();
+    }
+    return delta > 0;
+}
+
+int dynamometerData::getPacketsLost() const { return m_packetsLost; }
+
+bool dynamometerData::verifyCrc(const DecodedMessage &message, const QByteArray &originalData, uint16_t *calculatedCrc) {
+    // ricostruisci la parte da usare per il CRC
+    // escludi STX (\x02) e ETX (\x03)
+    int start = originalData.indexOf('\x02');
+    int end = originalData.lastIndexOf('\x03');
+    if (start < 0 || end <= start) return false;
+
+    QByteArray payload = originalData.mid(start + 1, end - start - 1);  // escluso STX/ETX
+
+    *calculatedCrc = crc16_ccitt((const uint8_t*)payload.data(), payload.size(), 0xFFFF);
+
+    bool ok = false;
+    uint16_t receivedCrc = message.crc.toUShort(&ok, 16);
+
+    return ok && (*calculatedCrc == receivedCrc);
+}
+
+// verifica mittente messaggio
+bool dynamometerData::isSenderOk(const QString &sender, const QString senderRef){
+    return sender == senderRef;
+}
+
+bool dynamometerData::isValueMsg(const QString &msgType){
+    return msgType == MSG_TYPE_VALUE;
+}
+
+bool dynamometerData::isMessageOk(const DecodedMessage &message, const QByteArray &originalData){
+
+    //verifica searriva da esp32 corretto
+    if (!isSenderOk(message.senderId, ESP_ID)){
+            qWarning() << "Mittente non corretto" << message.senderId;
+            return false;
+    }
+
+    if (!isValueMsg(message.msgType)){
+        qWarning() << "Tipo messaggio non corretto" << message.msgType;
+        return false;
+    }
+
+
+    if (isCounterOk(message.counter)) {
+        m_lastCounter = message.counter;
+        // prosegui con visualizzazione
+    } else {
+        qWarning() << "?? Pacchetto saltato o duplicato. Counter:" << message.counter;
+        return false;
+    }
+
+    uint16_t calculatedCrc = 0;
+    if (!verifyCrc(message, originalData, &calculatedCrc)){
+        qWarning() << "Crc non corretto. Inviato: " << message.crc <<" - crc calcolato: " << QString::number(calculatedCrc, 16).toUpper();
+        return false;
+    }
+
+    return true;
+}
+
