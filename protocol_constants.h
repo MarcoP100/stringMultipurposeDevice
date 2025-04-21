@@ -14,11 +14,15 @@ constexpr char PROTO_ID[] = "A7"; // per append()
 constexpr char MSG_TYPE_HEARTBEAT = 'H';
 constexpr char MSG_TYPE_ACK       = 'A';
 constexpr char MSG_TYPE_NACK      = 'N';
-constexpr char MSG_TYPE_VALUE     = 'V';
+constexpr char MSG_TYPE_VALUE     = 'D';
 
 constexpr char ESP_ID_1 = 'A';
 constexpr char ESP_ID_2 = '6';
 constexpr char ESP_ID[] = "A6";
+
+constexpr char ESP_STATIC_IP[] = "192.168.4.1";
+constexpr char ESP_SSID_NAME[] = "Dynamometer_ESP32C6";
+constexpr quint16 ESP_PORT = 8080;
 
 
 

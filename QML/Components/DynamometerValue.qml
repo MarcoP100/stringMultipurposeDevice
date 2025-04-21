@@ -4,14 +4,18 @@ import QtQuick.Controls 2.15
 Rectangle {
     id: valueDisplay
 
+    property string dynValue: ""
+    property string dynState: ""
+    property int dynLost: 0
+
     property color displayColor: {
-        if (dynamometerData.dynState === "X")
+        if (dynState === "X")
             return "blue";  // fallback fisso se non lampeggia
-        if (dynamometerData.dynState === "S")
+        if (dynState === "S")
             return "black";
-        if (dynamometerData.dynState === "N")
+        if (dynState === "N")
             return "green";
-        if (dynamometerData.dynState === "E")
+        if (dynState === "E")
             return "red";
         return "gray";
     }
@@ -41,7 +45,7 @@ Rectangle {
 
     Text {
         id: valueText
-        text: dynamometerData.dynValue // Mostra il valore con una cifra decimale
+        text: dynValue // Mostra il valore con una cifra decimale
         anchors.centerIn: parent
         font.family: dinCondensedFont.name
         font.pixelSize: 150
@@ -69,7 +73,7 @@ Rectangle {
 
     Text {
         id: lostText
-        text: "Pacchetti persi: " + dynamometerData.packetsLost
+        text: "Pacchetti persi: " + dynLost
         font.pixelSize: 20
         color: "red"
         anchors.bottom: parent.bottom

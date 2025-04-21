@@ -12,3 +12,4 @@ void BackendSystem::rebootSystem() {
     qDebug() << "Eseguo: reboot";
     QProcess::execute("sudo", QStringList() << "reboot");
 }
+

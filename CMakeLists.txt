@@ -38,12 +38,12 @@ qt_add_qml_module(appStringMultipurposeDevice
         QML/colors.js
 
     SOURCES
-        tcpclient.h
-        tcpclient.cpp
+        #tcpclient.h
+        #tcpclient.cpp
         wifimanager.h
         wifimanager.cpp
-        canmanager.h
-        canmanager.cpp
+        #canmanager.h
+        #canmanager.cpp
         backendsystem.h
         backendsystem.cpp
         dynamometerdata.h
@@ -63,6 +63,8 @@ qt_add_qml_module(appStringMultipurposeDevice
         SOURCES udpclient.h udpclient.cpp
         SOURCES protocol_constants.h
         SOURCES crc.h crc.cpp
+        SOURCES protocolmanager.h protocolmanager.cpp
+        SOURCES appcomponents.h appcomponents.cpp
 
 )
 

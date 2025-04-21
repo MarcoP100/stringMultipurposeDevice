@@ -21,8 +21,8 @@ Item {
     property string wifiIconStatusImg: "qrc:/wifi_off_bk.svg"
     property string networkName: "Selezionare rete"
 
-    property string tcpStatusImg: "qrc:/tcp_disable_gy.svg"
-    property string tcpStatusColor: Colors.DARK_GREY_COLOR
+    //property string tcpStatusImg: "qrc:/tcp_disable_gy.svg"
+    //property string tcpStatusColor: Colors.DARK_GREY_COLOR
 
     property string dynamometerState: "E"
     property string dynamometerVal: "------"
@@ -131,7 +131,7 @@ Item {
     }
 
 
-    Connections {
+    /*Connections {
         target: tcpClient
         function onSocketStateChanged(state){
             console.log("qml: TPCStatus:", state)
@@ -171,7 +171,7 @@ Item {
             }
 
         }
-    }
+    }*/
 
 
 
@@ -357,6 +357,9 @@ Item {
             bottomMargin: 5
             horizontalCenter: parent.horizontalCenter
         }
+        dynValue: dynamometerData.dynValue
+        dynState: dynamometerData.dynState
+        dynLost: dynamometerData.packetsLost
 
     }
     
@@ -388,9 +391,9 @@ Item {
         }
     }*/
 
-    Rectangle {
+    /*Rectangle {
         color: tcpClient.socketState === tcpClient.Connected ? "green" : "red"
-    }
+    }*/
 
 
     MyComponents.ShutdownIcon{

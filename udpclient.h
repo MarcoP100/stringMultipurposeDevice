@@ -4,29 +4,32 @@
 #include <QObject>
 #include <QTimer>
 #include <QUdpSocket>
-#include "wifimanager.h"
+
+
+constexpr quint16 UDP_PORT = 50000;
 
 class udpClient: public QObject {
     Q_OBJECT
 
+
 public:
     explicit udpClient(QObject *parent = nullptr);
-    void sendMessage(const QByteArray &message);
-    void bindToWiFiManager(WiFiManager *manager);
+    void sendMessage(const QByteArray &message,
+                     const QHostAddress &address,
+                     quint16 port);
 
 signals:
     void rawDataReceived(QByteArray data);
-    void udpConnectionTimeout();
 
 private slots:
     void processPendingDatagrams();
 
 private:
-    QTimer *timeoutTimer;
-    QTimer *sendTimer;
-    QUdpSocket *udpSocket = nullptr;
-    bool isConnectedToESP(const QString &newSsid);
 
+    QUdpSocket *udpSocket = nullptr;
+
+    void setupSocket();
+    void setupTimers();
 };
 
 #endif // UDPCLIENT_H

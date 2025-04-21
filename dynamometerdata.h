@@ -5,6 +5,8 @@
 #include <QString>
 #include <QTimer>
 
+
+
 class dynamometerData : public QObject
 {
     Q_OBJECT
@@ -16,43 +18,36 @@ class dynamometerData : public QObject
 public:
     explicit dynamometerData(QObject *parent = nullptr);
 
-    struct DecodedMessage {
-        QString senderId;
-        QString msgType;
-        int counter;
-        QString state; // Stato (E/S/N)
-        QString value; // Valore
-        QString crc;
-        bool isValid;  // Se il messaggio � valido
-    };
-
-    DecodedMessage decodeMessage(const QByteArray &data);
-    void handleTimeout();
 
     QString getDynValue() const;
     QString getDynState() const;
     int getPacketsLost() const;
 
+
+public slots:
+    void updateFromMessage(const QString &state, QString &value);
+    void updatePacketsLost(const int &packets);
+    void handleTimeout();
+
+
 signals:
     void valueChanged();
     void stateChanged();
     void packetsLostChanged();
-    void decodedMessage(const QString &state, const QString &value);
 
 private:
     QString m_value;
     QString m_state;
-    int m_lastCounter = -1;
     int m_packetsLost = 0;
+    QTimer *timeoutTimer;
+
 
     void setValue(const QString &value);
-
     void setState(const QString &state);
-    bool isMessageOk(const DecodedMessage &message, const QByteArray &originalData);
-    bool verifyCrc(const DecodedMessage &message, const QByteArray &originalData, uint16_t *calculatedCrc);
-    bool isCounterOk(int newCounter);
-    bool isSenderOk(const QString &sender, const QString senderRef);
-    bool isValueMsg(const QString &msgType);
+
+    void setupDynaTimers();
+    void startTimeout();
+
 };
 
 #endif // DYNAMOMETERDATA_H
