@@ -12,7 +12,7 @@ Item {
     height: parent.height
 
     signal mouseAreaClicked()
-    signal networkSelected(string ssid, bool requiresPassword, bool networkKnown)
+    signal handleNetworkAction(string ssid, bool requiresPassword, bool networkKnown, bool forcePassword)
 
     property bool wifiManagerBusy: false
     property var wifiListModel
@@ -63,10 +63,11 @@ Item {
                 listModel: wifiListModel
                 listVisible: !wifiManagerBusy
 
-                onNetworkSelected: function(selectedSsid, selectedRequiresPassword, selectedNetworkKnown) {
+                onHandleNetworkAction: function(selectedSsid, selectedRequiresPassword, selectedNetworkKnown, forcePassword) {
                     console.log("Rete selezionata:", selectedSsid);
-                    wifiScanDialog.networkSelected(selectedSsid, selectedRequiresPassword, selectedNetworkKnown);
+                    wifiScanDialog.handleNetworkAction(selectedSsid, selectedRequiresPassword, selectedNetworkKnown, forcePassword);
                 }
+
             }
         }
 

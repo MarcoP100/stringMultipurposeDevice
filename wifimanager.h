@@ -10,8 +10,7 @@
 #include <QDBusMetaType>
 
 
-typedef QMap<QString, QVariantMap> NestedMap;
-Q_DECLARE_METATYPE(NestedMap)
+
 
 
 class WiFiManager : public QObject
@@ -24,6 +23,8 @@ class WiFiManager : public QObject
 
     Q_ENUMS(DeviceState)
     Q_ENUMS(DeviceStateReason)
+
+
 
 public:
     enum ConnectionStatus {
@@ -169,6 +170,8 @@ private slots:
 
 private:
 
+
+
      struct NetworkInfo {
         QString ssid;
         bool requiresPassword;
@@ -190,6 +193,16 @@ private:
 
     QList<NetworkEntry> m_savedNetworks;
     QList<NetworkEntry> getSavedNetworks();
+
+
+    struct StaticIpConfig {
+        QString ip;
+        QString gateway;
+        int prefix; // es. 24
+    };
+
+    QMap<QString, StaticIpConfig> m_staticIpTable;
+
 
     QVariantMap toVariantMap(const NetworkInfo &network);
     void handleNetworkScanResult(const QList<QDBusObjectPath> &networks);
@@ -222,6 +235,7 @@ private:
     QTimer *m_scanTimeoutTimer = nullptr; // Timer per gestire il timeout della scansione
     QString m_connectedSsid = "";
 
+
     //connection
     void connectNoPassword(const QString &ssid, const QString &apPath);
     void connectWithPassword(const QString &ssid, const QString &apPath, const QString &password, const bool &savePassword);
@@ -231,6 +245,7 @@ private:
     QTimer *m_emitDelayTimer;  // Timer per il ritardo nell'emissione lista reti trovate
 
 
+    QList<QList<quint32>> buildAddresses(const QString &ip, const QString &gateway, int prefix);
 };
 
 #endif // WIFIMANAGER_H

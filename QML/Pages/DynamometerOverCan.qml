@@ -121,8 +121,8 @@ Item {
         }
 
         function onReasonChangeState(newState, reason){
-            //console.log("Nuovo stato:", newState, "Motivo:", reason);
-            if (newState === WiFiManager.NM_DEVICE_STATE_FAILED && reason === WiFiManager.NM_DEVICE_STATE_REASON_NO_SECRETS) {
+            console.log("Nuovo stato:", newState, "Motivo:", reason);
+            if (newState === WiFiStatusEnum.NM_DEVICE_STATE_FAILED && reason === WiFiStatusEnum.NM_DEVICE_STATE_REASON_NO_SECRETS) {
                 console.log("Apertura popup password");
                 passwordDialog.visible = true;
             }
@@ -257,9 +257,9 @@ Item {
 
         }
 
-        onNetworkSelected:function(selectedSsid, selectedRequiresPassword, selectedNetworkKnown){
+        onHandleNetworkAction:function(selectedSsid, selectedRequiresPassword, selectedNetworkKnown, forcePassword){
 
-            //console.log("Rete selezionata:", selectedSsid);
+            console.log("Rete selezionata:", selectedSsid, forcePassword) ;
             // Gestione della selezione della rete
             selectedNetwork = {
                 "ssid": selectedSsid,
@@ -268,17 +268,25 @@ Item {
             };
             //networkName = selectedNetwork.ssid;
             wifiScanDialog.visible = false;  // Chiudi il dialogo dopo la selezione
-            let result = NetUtils.checkPasswordLock(selectedNetwork);
-            if (result.shouldConnect) {
-                if (WiFiManager) {
-                    WiFiManager.connectToNetwork(selectedNetwork.ssid, "", false);
-                }
-            } else {
+            if (forcePassword) {
+                console.log("onHandleNetworkAction: apertura password manager");
                 passwordDialog.visible = true;
                 passwordDialog.ssid = selectedNetwork.ssid;
+            } else {
+                let result = NetUtils.checkPasswordLock(selectedNetwork);
+                if (result.shouldConnect) {
+                    if (WiFiManager) {
+                        WiFiManager.connectToNetwork(selectedNetwork.ssid, "", false);
+                    }
+                } else {
+                    passwordDialog.visible = true;
+                    passwordDialog.ssid = selectedNetwork.ssid;
+                }
             }
 
         }
+
+
         
         onVisibleChanged: {
             if (visible){

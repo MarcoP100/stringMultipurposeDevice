@@ -9,7 +9,7 @@ Item {
     width: wifiItemWidth
     height: wifiItemHeight
 
-    signal networkSelected(string ssid, bool requiresPassword, bool networkKnown)
+    signal handleNetworkAction(string ssid, bool requiresPassword, bool networkKnown, bool forcePassword)
 
     // Definisci una nuova property per la gestione dello stato di "requiresPassword"
     property bool requiresPassword: false
@@ -61,9 +61,33 @@ Item {
                 id: wifiSelectedArea
                 anchors.fill: parent
                 onClicked: {
-                    networkSelected(ssid, requiresPassword, networkKnown)
+                    if (!longPressTimer.running) {
+
+                        handleNetworkAction(ssid, requiresPassword, networkKnown, false);
+                   }
                 }
+
+                onPressAndHold:{
+                    handleNetworkAction(ssid, requiresPassword, networkKnown, true);
+                }
+
+                Timer {
+                    id: longPressTimer
+                    interval: 3000 // 3 secondi
+                    repeat: false
+                    onTriggered: wifiSelectedArea.onPressAndHold
+                }
+
+                onPressed: {
+                    longPressTimer.start(); // Avvia il timer per rilevare la pressione prolungata
+                }
+
+                onReleased: {
+                    longPressTimer.stop(); // Ferma il timer per evitare falsi trigger
+                }
+
             }
+
         }
     }
 

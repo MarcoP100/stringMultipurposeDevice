@@ -1,6 +1,7 @@
 #include "appcomponents.h"
 #include <QQmlContext>
 #include "protocol_constants.h"
+#include "wifi_dbus_types.h"
 
 
 AppComponents initComponents(QQmlApplicationEngine& engine) {
@@ -10,7 +11,7 @@ AppComponents initComponents(QQmlApplicationEngine& engine) {
     engine.rootContext()->setContextProperty("WiFiManager", components.wifiManager);
     qmlRegisterUncreatableType<WiFiManager>("com.wifiManager", 1, 0, "WiFiStatusEnum",
                                             "WiFiManager is available only via context property");
-    WiFiManager::registerDBusTypes();
+    registerDBusTypes();
 
     components.udp = new udpClient(components.wifiManager);
     engine.rootContext()->setContextProperty("udpClient", components.udp);

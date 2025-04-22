@@ -1,7 +1,7 @@
 #include <NetworkManager.h>
 #include "wifimanager.h"
 #include <QDebug>
-
+#include <QHostAddress>
 
 WiFiManager::WiFiManager(QObject *parent)
     : QObject{parent}, m_busy(false)
@@ -35,6 +35,10 @@ WiFiManager::WiFiManager(QObject *parent)
     //checkCurrentConnectionStatus();
     setupPropertyChangedSignal();
     setupStatusChangedSignal();
+
+    m_staticIpTable.insert("ReteTest", {"192.168.140.2", "192.168.140.1", 24});
+    m_staticIpTable.insert("Dynamometer_ESP32C6", {"192.168.4.2", "192.168.4.1", 24});
+
 
 }
 
@@ -413,7 +417,7 @@ void WiFiManager::connectWithPassword(const QString &ssid, const QString &apPath
     NetworkEntry network = {};
 
     QVariantMap wirelessSettings;
-    wirelessSettings["ssid"] = ssid.toUtf8();
+    wirelessSettings["ssid"] = QVariant::fromValue(QByteArray(ssid.toUtf8()));
     wirelessSettings["mode"] = "infrastructure";
     qDebug() << "Qmap 1 ottenuto:" << wirelessSettings;
 
@@ -447,10 +451,42 @@ void WiFiManager::connectWithPassword(const QString &ssid, const QString &apPath
     // Inserisci la sezione "802-11-wireless-security" nella mappa principale
     connectionSettings.insert("802-11-wireless-security", wirelessSecuritySettings);
 
+
+    //ipstatico se rete conosciuta senza dhcp
+        if (m_staticIpTable.contains(ssid)) {
+
+        QVariantMap ipv4Settings;
+        QVariantMap ipv6Settings;
+        StaticIpConfig config = m_staticIpTable.value(ssid);
+
+
+        ipv4Settings["method"] = "manual";
+        ipv4Settings["addresses"] = QVariant::fromValue(buildAddresses(config.ip, config.gateway, config.prefix));
+
+        ipv4Settings.remove("address-data");
+        ipv4Settings.remove("gateway");
+        ipv4Settings.remove("dns");
+
+        ipv6Settings["method"] = "disabled";
+
+        connectionSettings.insert("ipv4", ipv4Settings);
+        connectionSettings.insert("ipv6", ipv6Settings);
+
+        qDebug() << "IPv4 structure:\n" << QJsonDocument::fromVariant(ipv4Settings).toJson(QJsonDocument::Indented);
+
+
+        qDebug() << "Configurazione IP statica inserita per SSID:" << ssid;
+    } else
+        qDebug() << "Rete non trovata nella lista di reti statiche" << ssid;
+
+
+
+
+
     // Converte la mappa annidata per il metodo AddAndActivateConnection2
     QVariant finalConnectionSettings = QVariant::fromValue(connectionSettings);
 
-    qDebug() << "Qmap ottenuto:" << connectionSettings;
+    qDebug() << "Qmap ottenuto:" << finalConnectionSettings;
     // Opzioni per una connessione temporanea
     QVariantMap options;
     if (savePassword) {  // Controlla lo stato della spunta
@@ -459,6 +495,10 @@ void WiFiManager::connectWithPassword(const QString &ssid, const QString &apPath
     } else {
         options["persist"] = "volatile";  // Connessione temporanea
     }
+
+
+    qDebug() << "PSK type:" << password ;
+
 
 
 
@@ -486,9 +526,20 @@ void WiFiManager::connectWithPassword(const QString &ssid, const QString &apPath
         }
             m_connectedSsid = ssid;
             //emit connectionSuccessful(ssid);
-        }
-    }
 
+    }
+}
+
+
+QList<QList<quint32>> WiFiManager::buildAddresses(const QString &ip, const QString &gateway, int prefix) {
+    QHostAddress ipAddr(ip);
+    QHostAddress gwAddr(gateway);
+    QList<quint32> entry;
+    entry << qToBigEndian(ipAddr.toIPv4Address())
+          << prefix
+          << qToBigEndian(gwAddr.toIPv4Address());
+    return { entry };
+}
 
 
 
@@ -902,6 +953,4 @@ QDebug operator<<(QDebug dbg, const WiFiManager::NetworkEntry &entry) {
     return dbg.space();
 }
 
-void WiFiManager::registerDBusTypes() {
-    qDBusRegisterMetaType<NestedMap>();
-}
+

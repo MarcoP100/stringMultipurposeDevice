@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
     AppComponents components = initComponents(engine);
     setupConnections(components);
 
+
+
    const QUrl url(QStringLiteral("qrc:/StringMultipurposeDevice/QML/main.qml"));
     QObject::connect(
         &engine,

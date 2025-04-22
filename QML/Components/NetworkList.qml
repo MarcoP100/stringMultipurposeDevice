@@ -13,7 +13,7 @@ Flickable {
 
     property alias listViewContentHeight: listView.height;
 
-    signal networkSelected(string ssid, bool requiresPassword, bool networkKnown)
+    signal handleNetworkAction(string ssid, bool requiresPassword, bool networkKnown, bool forcePassword)
 
     width: flickableAreaWidth
     height: listViewContentHeight
@@ -44,10 +44,13 @@ Flickable {
             ssid: model.ssid
             requiresPassword: model.requiresPassword
             networkKnown: model.networkKnown
-            onNetworkSelected: function(selectedSsid, selectedRequiresPassword, selectedNetworkKnown) {
+            onHandleNetworkAction: function(selectedSsid, selectedRequiresPassword, selectedNetworkKnown, forcePassword) {
                 // Passa il segnale al livello superior
-                flickableArea.networkSelected(selectedSsid, selectedRequiresPassword, selectedNetworkKnown);
+                flickableArea.handleNetworkAction(selectedSsid, selectedRequiresPassword, selectedNetworkKnown, forcePassword);
             }
+
+
+
         }
     }
 

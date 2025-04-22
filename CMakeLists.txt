@@ -65,6 +65,8 @@ qt_add_qml_module(appStringMultipurposeDevice
         SOURCES crc.h crc.cpp
         SOURCES protocolmanager.h protocolmanager.cpp
         SOURCES appcomponents.h appcomponents.cpp
+        SOURCES wifi_dbus_types.h
+        SOURCES wifi_dbus_types.cpp
 
 )
 
